@@ -20,6 +20,23 @@ public class Performance {
 		this.availabilityCircle = availabilityCircle;
 		this.price = price;
 	}
+	
+	public void print() {
+		System.out.println("A performance of " + show.getTitle());
+		System.out.println("date: " + date + " (" + getMatString() + ")");
+		System.out.println(availabilityStalls + " seats available in the stalls");
+		System.out.println(availabilityCircle + " seats available in the circle");
+		System.out.println("Price: " + getPriceAsString(price) );
+	}
+	public String getMatString() {
+		if (matinee) {
+			return "matinee";
+		}
+		return "evening";
+	}
+	public static String getPriceAsString(int price) {
+		return "£"+ price/100 + "." + String.format("%02d", price%100);
+	}
 
 	public int getID() {
 		return id;

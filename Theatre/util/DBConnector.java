@@ -61,30 +61,48 @@ public class DBConnector {
 	}
 	
 	public ArrayList<Performance> getPerformances(int showID) {
-		//Create SQL Query String here...
-		String queryString = "" + showID + "";
-		
-		ResultSet results = executeQuery(queryString);
 		ArrayList<Performance> performances = new ArrayList<Performance>();
+		String showQueryString = "SELECT * FROM showing WHERE ShowID = " + showID;
+		System.out.println(showQueryString);
+		System.out.println(showQueryString);
+		ResultSet showResults = executeQuery(showQueryString);
+		Show s;
+		try {
+			showResults.next();
+			s = populateShow(showResults);
+		}
+		catch (SQLException e) { return performances;}
+		
+		String perfQueryString = "SELECT * FROM performance WHERE ShowingID = " + showID;
+		System.out.println(perfQueryString);
+		System.out.println(perfQueryString);
+		ResultSet results = executeQuery(perfQueryString);
 		try {
 			while (results.next()) {
-				//run nested query to get performance's show details...
-				String showQueryString = "" + results.getInt(1) + ""; //get a single show from perf id //is it "1"?
-				ResultSet showResults = executeQuery(showQueryString);
-				Show s = populateShow(showResults);
 				performances.add(populatePerformance(results, s) );
 			}
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
-			return null;
+			return performances;
 		}
 		return performances;
 	}
 	
-	public ArrayList<Show> getAllShows() {
-		//Get correct Query String
-		String queryString = ""; //HERE!
+	//0 = everything
+	//1 = search by keyword
+	//2 = search by date
+	public ArrayList<Show> getShows(int filterType, String filter) {
+		String queryString = "";
+		if (filterType == 1) {
+			queryString = "SELECT * FROM showing WHERE title = \""+ filter+ "\"";
+		}
+		else if (filterType == 2) {
+			queryString = "SELECT * FROM showing WHERE DATE = "+ filter; //no
+		}
+		else {
+			queryString = "SELECT * FROM showing";
+		}
 		
 		ResultSet results = executeQuery(queryString);
 		ArrayList<Show> shows = new ArrayList<Show>();
@@ -102,25 +120,25 @@ public class DBConnector {
 	
 	private Performance populatePerformance(ResultSet rs, Show s) throws SQLException {
 		return new Performance(
-				rs.getInt(0),
+				rs.getInt("PerformanceID"),
 				s,
-				rs.getDate(1).toLocalDate(),
-				rs.getBoolean(2),
-				rs.getInt(3),
-				rs.getInt(4),
-				rs.getInt(5)
+				rs.getDate("pdate").toLocalDate(),
+				true, //rs.getBoolean("ptime"), //not bool :(
+				rs.getInt("NumberOfSeatsStalls"),
+				rs.getInt("NumberOfSeatsCircle"),
+				rs.getInt("Price")
 				);
 	}
 	
 	private Show populateShow(ResultSet rs) throws SQLException {
 		return new Show(
-				rs.getInt(0),
-				rs.getString(1),
-				rs.getString(2),
-				rs.getString(3),
-				rs.getInt(4),
-				rs.getString(5),
-				rs.getString(6)			
+				rs.getInt("showID"),
+				rs.getString("Title"),
+				"NO TYPE", //rs.getString("ShowType"),
+				rs.getString("Info"),
+				rs.getInt("Duration"),
+				rs.getString("Lang"),
+				"NA" //rs.getString("Performer")
 				);
 	}
 	

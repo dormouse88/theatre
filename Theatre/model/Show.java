@@ -18,6 +18,17 @@ public class Show {
 		this.language = language;
 		this.performer = performer;
 	}
+	
+	public void print() {
+		System.out.println("Title: "+ title);
+		System.out.println("Type: "+ type);
+		System.out.println("Description: "+ description);
+		System.out.println("Duration: "+ duration + " minutes.");
+		System.out.println("Language: "+ language);
+		if (! performer.isBlank() ) {
+			System.out.println("Music by: "+ performer);
+		}
+	}
 
 	public int getID() {
 		return id;

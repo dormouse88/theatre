@@ -15,7 +15,16 @@ public class Basket {
 		bookings.add(new PerformanceBooking(perf, stalls, adults, kids));
 	}
 	public void displayBasket() {
-		//print out some shit
+		for (PerformanceBooking pb: bookings) {
+			String seatZone = "";
+			if (pb.getStalls()) {seatZone = "stalls";}
+			else {seatZone = "circle";}
+			System.out.println(pb.getAdults() + " adults and " + pb.getKids() + " children seated in the "+ seatZone + ".");
+			Performance perf = pb.getPerformance();
+			System.out.println("A performance of " + perf.getShow().getTitle() + " on " + perf.getDate() + " (" + perf.getMatString() + ").");
+			System.out.println("Price: "+ perf.getPriceAsString( calculatePrice() ) );
+			System.out.println();
+		}
 	}
 	public void clearBasket() {
 		bookings.clear();
