@@ -153,6 +153,7 @@ public class DBConnector {
 	}
 	
 	public Boolean makePurchase(ArrayList<PerformanceBooking> bookings) {
+		//TODO: Making a purchase
 		
 		for (int i = 0; i<bookings.size(); i++) {
 			int perfID = bookings.get(i).getPerformance().getID();

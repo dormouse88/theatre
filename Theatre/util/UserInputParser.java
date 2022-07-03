@@ -38,15 +38,3 @@ public class UserInputParser {
         }
 	}
 }
-
-
-
-
-//Scanner tokenizer = new Scanner(inputLine);
-//while (tokenizer.hasNext()) {
-//	parameters.add( tokenizer.next() );
-//}
-
-//for (String s: parameters) {
-//	System.out.println(s);
-//}

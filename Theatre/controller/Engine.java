@@ -27,7 +27,20 @@ public class Engine {
 		db.connect();
 	}
 	
+//TODO: Refactor Engine class (especially the switch)
+	
 	public void run() {
+		
+		//TODO: Automate initial database construction.
+		// WILL NEED THIS:
+//				QueryFileParser creation_sql = new QueryFileParser("DB creation script.sql");
+//				ArrayList<String> cre = creation_sql.getAllQueries();
+//				for (int i = 0; i < cre.size(); i++ )
+//				{
+//					db.executeQuery(cre.get(i) + ";");
+//				}
+				
+		
 		UserInputParser uip = new UserInputParser();
 		Boolean finished = false;
 		displayOptions(); //display options once when prog first starts
@@ -50,7 +63,7 @@ public class Engine {
 				displayShows();
 				break;
 			case 3:
-				String searchDate = uip.getString( "Enter Date in dd-mm-yyyy format" );
+				String searchDate = uip.getString( "Enter Date in dd-mm-yyyy format" ); //TODO: Decide on date search returns (show or performance)
 				showList = db.getShows(2, searchDate ); //by date
 				displayShows();
 				break;
@@ -84,7 +97,10 @@ public class Engine {
 				ArrayList<PerformanceBooking> bookings = basket.getBookings();
 				if (bookings.size() > 0) {
 					db.makePurchase( basket.getBookings() );
-					//if successful, basket.clear();
+					//TODO: if successful, inform user and basket.clear();
+				}
+				else {
+					System.out.println("Your basket has nothing in it.");
 				}
 				break;
 			case 7:
@@ -133,6 +149,7 @@ public class Engine {
 				break;
 			case 9:
 				//enter customer details
+				//TODO: Does the customer need to be able to check their entered details?
 				String custName = uip.getString( "Enter your name" );
 				String custAddress = uip.getString( "Enter your address" );
 				int custCCN = uip.getInt( "Enter your credit card number" );
@@ -147,15 +164,6 @@ public class Engine {
 			}
 		}
 
-// WILL NEED THIS:
-//		QueryFileParser creation_sql = new QueryFileParser("DB creation script.sql");
-//		ArrayList<String> cre = creation_sql.getAllQueries();
-//		for (int i = 0; i < cre.size(); i++ )
-//		{
-//			db.executeQuery(cre.get(i) + ";");
-//		}
-		
-
 		db.close();
 	}
 
@@ -167,7 +175,6 @@ public class Engine {
 	}
 	
 	public void displayPerformances() {
-		//System.out.println("PERFORMANCE LIST SIZE: " + performanceList.size());
 		for (int i = 0; i<performanceList.size(); i++) {
 			System.out.print("Performance "+ (i+1) + ": ");
 			performanceList.get(i).print();

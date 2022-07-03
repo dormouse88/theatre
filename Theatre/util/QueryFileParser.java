@@ -33,5 +33,7 @@ public class QueryFileParser {
 		}
 		return queries;
 	}
+	
+	//TODO: Possibly add support for getting single queries
 
 };
