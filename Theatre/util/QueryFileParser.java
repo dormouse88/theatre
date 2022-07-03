@@ -21,9 +21,16 @@ public class QueryFileParser {
 		ArrayList<String> queries = new ArrayList<String>(); 
 		s.useDelimiter(";");
 		while ( s.hasNext() ) {
-			queries.add( s.next() + ";" );
+			queries.add( s.next() );
 		}
 		queries.remove( queries.size()-1 );
+		
+		for (int i = 0; i< queries.size(); i++) {
+			String q = queries.get(i);
+//			if (q.endsWith(";")) {
+//				q = q.substring(0, q.length() -1);
+//			}
+		}
 		return queries;
 	}
 

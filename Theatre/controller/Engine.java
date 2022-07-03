@@ -30,8 +30,14 @@ public class Engine {
 	public void run() {
 		UserInputParser uip = new UserInputParser();
 		Boolean finished = false;
+		displayOptions(); //display options once when prog first starts
 		while (!finished) {
-			int userInput = uip.getCommand();
+			//displayOptions();
+			int userInput = uip.getInt("Enter a number from the list of options or enter 0 to see the list: > ");
+	        if (userInput != 100 && userInput > 9)
+	        {
+	        	userInput = 0;
+	        }
 
 			switch(userInput) {
 			case 1:
@@ -68,6 +74,7 @@ public class Engine {
 					performanceList = db.getPerformances( showList.get(showIndex2-1).getID() );
 					displayPerformances();
 				}
+				break;
 			case 6:
 				//Make Purchase
 				if (! customer.isComplete()) {
@@ -87,7 +94,7 @@ public class Engine {
 					System.out.println("No such performance number in list of performances.");
 				}
 				else {
-					Performance perf = performanceList.get(perfIndex);
+					Performance perf = performanceList.get(perfIndex-1);
 					String seatZone = uip.getString( "Enter S for stalls seats or C for circle seats" );
 					Boolean stalls;
 					if (seatZone.equals("S")) {
@@ -118,6 +125,7 @@ public class Engine {
 						break;
 					}
 					basket.addPerformance(perf, stalls, adults, kids);
+					System.out.println("Your basket has been updated.");
 				}
 				break;
 			case 8:
@@ -133,6 +141,9 @@ public class Engine {
 			case 100:
 				finished = true;
 				break;
+			default:
+				displayOptions();
+				break;
 			}
 		}
 
@@ -141,7 +152,7 @@ public class Engine {
 //		ArrayList<String> cre = creation_sql.getAllQueries();
 //		for (int i = 0; i < cre.size(); i++ )
 //		{
-//			db.executeQuery(cre.get(i));
+//			db.executeQuery(cre.get(i) + ";");
 //		}
 		
 
@@ -156,11 +167,27 @@ public class Engine {
 	}
 	
 	public void displayPerformances() {
-		System.out.println("PERFORMANCE LIST SIZE: " + performanceList.size());
+		//System.out.println("PERFORMANCE LIST SIZE: " + performanceList.size());
 		for (int i = 0; i<performanceList.size(); i++) {
+			System.out.print("Performance "+ (i+1) + ": ");
 			performanceList.get(i).print();
 		}
 	}
 
+	public void displayOptions() {
+		System.out.println("0 - Display Available Options");
+		System.out.println("1 - List Shows");
+		System.out.println("2 - List Shows By Title"); //{title}
+		System.out.println("3 - List Shows By Date"); //{date}
+		System.out.println("4 - View Show Details"); //{show_index}
+		System.out.println("5 - List Performances"); //{show_index}
+		System.out.println("6 - Make Purchase");
+		System.out.println("7 - Add A Performance To Basket"); // {perf_index} {stalls} {adults} {kids}
+		System.out.println("8 - View Basket");
+		System.out.println("9 - Enter Customer Details"); // {name} {address} {cc}
+		System.out.println("100 - quit");
+		System.out.println();
+	}
+	
 	
 }

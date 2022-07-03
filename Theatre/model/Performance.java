@@ -23,10 +23,11 @@ public class Performance {
 	
 	public void print() {
 		System.out.println("A performance of " + show.getTitle());
-		System.out.println("date: " + date + " (" + getMatString() + ")");
-		System.out.println(availabilityStalls + " seats available in the stalls");
-		System.out.println(availabilityCircle + " seats available in the circle");
+		System.out.println("Date: " + date + " (" + getMatString() + ")");
+		System.out.println(availabilityStalls + " Seats available in the stalls");
+		System.out.println(availabilityCircle + " Seats available in the circle");
 		System.out.println("Price: " + getPriceAsString(price) );
+		System.out.println();
 	}
 	public String getMatString() {
 		if (matinee) {

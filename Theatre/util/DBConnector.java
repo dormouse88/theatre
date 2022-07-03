@@ -62,20 +62,26 @@ public class DBConnector {
 	
 	public ArrayList<Performance> getPerformances(int showID) {
 		ArrayList<Performance> performances = new ArrayList<Performance>();
-		String showQueryString = "SELECT * FROM showing WHERE ShowID = " + showID;
-		System.out.println(showQueryString);
-		System.out.println(showQueryString);
+		
+		QueryFileParser qfp = new QueryFileParser("getShows.sql");
+		String showQueryString = qfp.getAllQueries().get(0);
+		showQueryString += " WHERE Showing.ShowID = " + showID;
+
 		ResultSet showResults = executeQuery(showQueryString);
 		Show s;
 		try {
 			showResults.next();
 			s = populateShow(showResults);
 		}
-		catch (SQLException e) { return performances;}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return performances;
+		}
 		
-		String perfQueryString = "SELECT * FROM performance WHERE ShowingID = " + showID;
-		System.out.println(perfQueryString);
-		System.out.println(perfQueryString);
+		QueryFileParser qfp2 = new QueryFileParser("getPerformances.sql");
+		String perfQueryString = qfp2.getAllQueries().get(0);
+		perfQueryString += " WHERE Showing.ShowID = " + showID;
+
 		ResultSet results = executeQuery(perfQueryString);
 		try {
 			while (results.next()) {
@@ -93,15 +99,15 @@ public class DBConnector {
 	//1 = search by keyword
 	//2 = search by date
 	public ArrayList<Show> getShows(int filterType, String filter) {
-		String queryString = "";
+		QueryFileParser qfp = new QueryFileParser("getShows.sql");
+		String queryString = qfp.getAllQueries().get(0);
 		if (filterType == 1) {
-			queryString = "SELECT * FROM showing WHERE title = \""+ filter+ "\"";
+			queryString += " WHERE title = \""+ filter+ "\"";
 		}
 		else if (filterType == 2) {
-			queryString = "SELECT * FROM showing WHERE DATE = "+ filter; //no
+			queryString += " WHERE DATE = "+ filter; //no. Will return performances or shows?
 		}
 		else {
-			queryString = "SELECT * FROM showing";
 		}
 		
 		ResultSet results = executeQuery(queryString);
@@ -119,13 +125,17 @@ public class DBConnector {
 	}
 	
 	private Performance populatePerformance(ResultSet rs, Show s) throws SQLException {
+		Boolean mat = false;
+		if (rs.getString("ptime").equals("Matinee")) {
+			mat = true;
+		}
 		return new Performance(
 				rs.getInt("PerformanceID"),
 				s,
 				rs.getDate("pdate").toLocalDate(),
-				true, //rs.getBoolean("ptime"), //not bool :(
-				rs.getInt("NumberOfSeatsStalls"),
-				rs.getInt("NumberOfSeatsCircle"),
+				mat,
+				rs.getInt("StallSeats"),
+				rs.getInt("CircleSeats"),
 				rs.getInt("Price")
 				);
 	}
@@ -134,11 +144,11 @@ public class DBConnector {
 		return new Show(
 				rs.getInt("showID"),
 				rs.getString("Title"),
-				"NO TYPE", //rs.getString("ShowType"),
-				rs.getString("Info"),
-				rs.getInt("Duration"),
-				rs.getString("Lang"),
-				"NA" //rs.getString("Performer")
+				rs.getString("Genre"),
+				rs.getString("Description"),
+				rs.getInt("RunTimeMinutes"),
+				rs.getString("Language"),
+				rs.getString("Performer")
 				);
 	}
 	
