@@ -30,10 +30,9 @@ public class Engine {
 	}
 	
 //TODO: Refactor Engine class (especially the switch)
-//TODO: Add user option to create Database?
 	
 	public void run() {
-		
+		db.createDatabase();
 		UserInputParser uip = new UserInputParser();
 		Boolean finished = false;
 		displayOptions(); //display options once when prog first starts
@@ -57,7 +56,7 @@ public class Engine {
 				break;
 			case 3: //performances by date
 				try {
-					LocalDate searchDate = uip.getDate("");
+					LocalDate searchDate = uip.getDate();
 					performanceList = db.getPerformancesByDate(searchDate );
 					displayPerformances();
 				}
@@ -162,7 +161,6 @@ public class Engine {
 				break;
 			}
 		}
-
 		db.close();
 	}
 

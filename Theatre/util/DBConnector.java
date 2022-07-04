@@ -16,6 +16,10 @@ import model.Show;
 import model.Performance;
 import model.PerformanceBooking;
 
+/**
+ * This class handles all database interactions for the Theatre application.
+ * @author dor
+ */
 public class DBConnector {
 	private Connection conn;
 	private QueryFileParser qfp;
@@ -25,6 +29,11 @@ public class DBConnector {
 		qfp = new QueryFileParser();
 	}
 	
+	/**
+	 * Attempts to connect to an database.
+	 * Connection configuration can be set in connection.txt file.
+	 * Connection credentials can be set in credentials.txt file.
+	 */
 	public void connect() {
 		try {
 			Scanner s = new Scanner(new File("credentials.txt"));
@@ -43,14 +52,15 @@ public class DBConnector {
 			e.printStackTrace();
 			return;
 		}
-		if (conn != null) {
-			System.out.println("Connection established.");
-		} else {
+		if (conn == null) {
 			System.out.println("Connection null still.");
 		}
 	}
 
-	public void CreateDatabase() {
+	/**
+	 * Runs an SQL script that creates the database and populates it with sample data.
+	 */
+	public void createDatabase() {
 		ArrayList<String> cre = qfp.getCreationScript();
 		for (int i = 0; i < cre.size(); i++ )
 		{
@@ -58,39 +68,96 @@ public class DBConnector {
 		}
 	}
 	
-	private int executeUpdate(String sql) {
-		try {
-			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			return pst.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(sql + "\n failed to run.");
-			e.printStackTrace();
-			return 0;
-		}
-	}
-	
-	private ResultSet executeQuery(String sql) {
-		try {
-			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-			pst.execute();
-			ResultSet results = pst.getResultSet();
-			return results;
-		} catch (SQLException e) {
-			System.out.println(sql + "\n failed to run.");
-			e.printStackTrace();
-			return null;
-		}
-	}
-
+	/**
+	 * Retrieves and returns all shows from the database.
+	 */
 	public ArrayList<Show> getAllShows() {
 		String query = qfp.getShow();
 		return getShows(query);
 	}
 
+	/**
+	 * Retrieves and returns all shows from the database that contain the
+	 * parameter string in their title.
+	 * @param title A substring to search for
+	 */
 	public ArrayList<Show> getShowsByTitle(String title) {
-		String query = qfp.getShow() + " WHERE title = \""+ title + "\"";
+		String query = qfp.getShow() + " WHERE title LIKE '%"+ title + "%'";
 		return getShows(query);
 	}
+
+	/**
+	 * Retrieves and returns all performances from the database which are performances 
+	 * of the show whose ID was passed in.
+	 * @param showID The primary key of the matching show
+	 */
+	public ArrayList<Performance> getPerformancesByShowID(int showID) {
+		String perfQueryString = qfp.getPerformance() + " WHERE Showing.ShowID = " + showID;
+		return getPerformances(perfQueryString);
+	}
+
+	/**
+	 * Retrieves and returns all performances from the database on the given date.
+	 */
+	public ArrayList<Performance> getPerformancesByDate(LocalDate date) {
+		String perfQueryString = qfp.getPerformance() + " WHERE pdate = '" + date.toString() + "'";
+		return getPerformances(perfQueryString);
+	}
+
+	/**
+	 * This method attempts to book seats on the database for multiple performances. 
+	 * If any one performance's booking fails to be booked (perhaps because of a lack of seats), the
+	 * whole transaction will abort and no database changes will be effected.
+	 * @param bookings An ArrayList of Performance Bookings that specify the full set of performances
+	 * requested and the details of number of tickets required, etc.
+	 * @return true if purchase succeeded, otherwise false.
+	 */
+	public Boolean makePurchase(ArrayList<PerformanceBooking> bookings) {
+		int failures = 0;
+		executeQuery("START TRANSACTION;");
+		for (int i = 0; i<bookings.size(); i++) {
+			PerformanceBooking pb = bookings.get(i);
+			
+			int perfID = pb.getPerformance().getID();
+			int kids = pb.getKids(); 
+			int adults = pb.getAdults();
+			int seats = kids+adults;
+			Boolean stalls = pb.getStalls();
+			
+			//run an sql update query using these details
+			String seatZone = "NumberOfSeatsCircle";
+			if (stalls) {
+				seatZone = "NumberOfSeatsStalls";
+			}
+			String update = "UPDATE Performance SET "+seatZone+" = "+seatZone+" - "+seats+" WHERE PerformanceID = " +perfID+ " AND "+seatZone+" >= "+seats+";";
+			int matches = executeUpdate(update);
+			if (matches == 0) {
+				failures++;
+			}
+		}
+		if (failures == 0) {
+			executeQuery("COMMIT;");
+			return true;
+		}
+		else {
+			executeQuery("ROLLBACK;");
+			return false;
+		}
+	}
+
+	/**
+	 * Closes the database connection.
+	 */
+	public void close() {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println("Connection not closed.");
+			e.printStackTrace();
+		}
+	}
+
+/////////////////////////////  PRIVATE METHODS BEGIN:  ///////////////////////////////////////////
 
 	private ArrayList<Show> getShows(String query) {
 		ResultSet results = executeQuery(query);
@@ -105,16 +172,6 @@ public class DBConnector {
 			return null;
 		}
 		return shows;
-	}
-	
-	public ArrayList<Performance> getPerformancesByShowID(int showID) {
-		String perfQueryString = qfp.getPerformance() + " WHERE Showing.ShowID = " + showID;
-		return getPerformances(perfQueryString);
-	}
-
-	public ArrayList<Performance> getPerformancesByDate(LocalDate date) {
-		String perfQueryString = qfp.getPerformance() + " WHERE pdate = '" + date.toString() + "'";
-		return getPerformances(perfQueryString);
 	}
 	
 	private ArrayList<Performance> getPerformances(String perfQueryString) {
@@ -171,47 +228,28 @@ public class DBConnector {
 				rs.getString("Performer")
 				);
 	}
-	
-	public Boolean makePurchase(ArrayList<PerformanceBooking> bookings) {
-		int failures = 0;
-		executeQuery("START TRANSACTION;");
-		for (int i = 0; i<bookings.size(); i++) {
-			PerformanceBooking pb = bookings.get(i);
-			
-			int perfID = pb.getPerformance().getID();
-			int kids = pb.getKids(); 
-			int adults = pb.getAdults();
-			int seats = kids+adults;
-			Boolean stalls = pb.getStalls();
-			
-			//run an sql update query using these details
-			String seatZone = "NumberOfSeatsCircle";
-			if (stalls) {
-				seatZone = "NumberOfSeatsStalls";
-			}
-			String update = "UPDATE Performance SET "+seatZone+" = "+seatZone+" - "+seats+" WHERE PerformanceID = " +perfID+ " AND "+seatZone+" >= "+seats+";";
-			int matches = executeUpdate(update);
-			if (matches == 0) {
-				failures++;
-			}
-		}
-		if (failures == 0) {
-			executeQuery("COMMIT;");
-			return true;
-		}
-		else {
-			executeQuery("ROLLBACK;");
-			return false;
+
+	private int executeUpdate(String sql) {
+		try {
+			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			return pst.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(sql + "\n failed to run.");
+			e.printStackTrace();
+			return 0;
 		}
 	}
-
-	public void close() {
+	
+	private ResultSet executeQuery(String sql) {
 		try {
-			conn.close();
-			System.out.println("Connection closed.");
+			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			pst.execute();
+			ResultSet results = pst.getResultSet();
+			return results;
 		} catch (SQLException e) {
-			System.out.println("Connection not closed.");
+			System.out.println(sql + "\n failed to run.");
 			e.printStackTrace();
+			return null;
 		}
 	}
 }

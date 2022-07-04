@@ -11,6 +11,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema Theatre
 -- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `Theatre`;
 CREATE SCHEMA IF NOT EXISTS `Theatre` DEFAULT CHARACTER SET utf8 ;
 USE `Theatre` ;
 
