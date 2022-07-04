@@ -58,6 +58,17 @@ public class DBConnector {
 		}
 	}
 	
+	private int executeUpdate(String sql) {
+		try {
+			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			return pst.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(sql + "\n failed to run.");
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	private ResultSet executeQuery(String sql) {
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -108,7 +119,6 @@ public class DBConnector {
 	
 	private ArrayList<Performance> getPerformances(String perfQueryString) {
 		ArrayList<Performance> performances = new ArrayList<Performance>();
-		
 		try {
 			ResultSet perfResults = executeQuery(perfQueryString);
 			while (perfResults.next()) {
@@ -163,25 +173,36 @@ public class DBConnector {
 	}
 	
 	public Boolean makePurchase(ArrayList<PerformanceBooking> bookings) {
-		//TODO: Making a purchase
-		
+		int failures = 0;
+		executeQuery("START TRANSACTION;");
 		for (int i = 0; i<bookings.size(); i++) {
 			PerformanceBooking pb = bookings.get(i);
 			
 			int perfID = pb.getPerformance().getID();
 			int kids = pb.getKids(); 
 			int adults = pb.getAdults();
+			int seats = kids+adults;
 			Boolean stalls = pb.getStalls();
 			
-			//also get other details from each booking
-			
 			//run an sql update query using these details
+			String seatZone = "NumberOfSeatsCircle";
+			if (stalls) {
+				seatZone = "NumberOfSeatsStalls";
+			}
+			String update = "UPDATE Performance SET "+seatZone+" = "+seatZone+" - "+seats+" WHERE PerformanceID = " +perfID+ " AND "+seatZone+" >= "+seats+";";
+			int matches = executeUpdate(update);
+			if (matches == 0) {
+				failures++;
+			}
 		}
-		// sql commit
-		
-		//Boolean success = was it successful?
-				
-		return true; //(or false if transaction didn't succeed)
+		if (failures == 0) {
+			executeQuery("COMMIT;");
+			return true;
+		}
+		else {
+			executeQuery("ROLLBACK;");
+			return false;
+		}
 	}
 
 	public void close() {

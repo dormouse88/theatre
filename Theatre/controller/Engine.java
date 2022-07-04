@@ -91,8 +91,14 @@ public class Engine {
 				}
 				ArrayList<PerformanceBooking> bookings = basket.getBookings();
 				if (bookings.size() > 0) {
-					db.makePurchase( basket.getBookings() );
-					//TODO: if successful, inform user and basket.clear();
+					boolean success = db.makePurchase( basket.getBookings() );
+					if (success) {
+						System.out.println("Your tickets have been successfully ordered.");
+						basket.clearBasket();
+					}
+					else {
+						System.out.println("Your purchase failed.");
+					}
 				}
 				else {
 					System.out.println("Your basket has nothing in it.");
@@ -194,6 +200,4 @@ public class Engine {
 		System.out.println("100 - quit");
 		System.out.println();
 	}
-	
-	
 }
