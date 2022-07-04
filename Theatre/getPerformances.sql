@@ -1,5 +1,6 @@
 SELECT 
 	PerformanceID,
+	ShowID,
 	pdate,
 	ptime,
     NumberOfSeatsCircle AS CircleSeats,
