@@ -17,11 +17,23 @@ import model.PerformanceBooking;
 
 public class DBConnector {
 	private Connection conn;
+	private ArrayList<String> creationScript;
+	private ArrayList<String> queries;
 
 	public DBConnector() {
 		conn = null;
+		creationScript = new ArrayList<String>();
+		queries = new ArrayList<String>();
+		{
+			QueryFileParser qfp = new QueryFileParser("getShows.sql");
+			queries.add( qfp.getAllQueries().get(0) );
+		}
+		{
+			QueryFileParser qfp = new QueryFileParser("getPerformances.sql");
+			queries.add( qfp.getAllQueries().get(0) );
+		}
 	}
-
+	
 	public void connect() {
 		try {
 			Scanner s = new Scanner(new File("credentials.txt"));
@@ -59,48 +71,19 @@ public class DBConnector {
 			return null;
 		}
 	}
-	
-	public ArrayList<Performance> getPerformances(int showID) {
-		ArrayList<Performance> performances = new ArrayList<Performance>();
-		
-		QueryFileParser qfp = new QueryFileParser("getShows.sql");
-		String showQueryString = qfp.getAllQueries().get(0);
-		showQueryString += " WHERE Showing.ShowID = " + showID;
 
-		ResultSet showResults = executeQuery(showQueryString);
-		Show s;
-		try {
-			showResults.next();
-			s = populateShow(showResults);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-			return performances;
-		}
-		
-		QueryFileParser qfp2 = new QueryFileParser("getPerformances.sql");
-		String perfQueryString = qfp2.getAllQueries().get(0);
-		perfQueryString += " WHERE Showing.ShowID = " + showID;
-
-		ResultSet results = executeQuery(perfQueryString);
-		try {
-			while (results.next()) {
-				performances.add(populatePerformance(results, s) );
-			}
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-			return performances;
-		}
-		return performances;
-	}
+//	public ArrayList<Show> getAllShows() {
+//		
+//		return getShows(query);
+//	}
 	
 	//0 = everything
 	//1 = search by keyword
 	//2 = search by date
 	public ArrayList<Show> getShows(int filterType, String filter) {
-		QueryFileParser qfp = new QueryFileParser("getShows.sql");
-		String queryString = qfp.getAllQueries().get(0);
+//		QueryFileParser qfp = new QueryFileParser("getShows.sql");
+//		String queryString = qfp.getAllQueries().get(0);
+		String queryString = queries.get(0);
 		if (filterType == 1) {
 			queryString += " WHERE title = \""+ filter+ "\"";
 		}
@@ -122,6 +105,50 @@ public class DBConnector {
 			return null;
 		}
 		return shows;
+	}
+	
+	public ArrayList<Performance> getPerformancesByShowID(int showID) {
+//		QueryFileParser qfp = new QueryFileParser("getPerformances.sql");
+//		String perfQueryString = qfp.getAllQueries().get(0);
+		String perfQueryString = queries.get(1) + " WHERE Showing.ShowID = " + showID;
+		return getPerformances(perfQueryString);
+	}
+
+	public ArrayList<Performance> getPerformancesByDate(String date) {
+//		QueryFileParser qfp = new QueryFileParser("getPerformances.sql");
+//		String perfQueryString = qfp.getAllQueries().get(0);
+		String perfQueryString = queries.get(1) + " WHERE pdate = " + date;
+		return getPerformances(perfQueryString);
+	}
+	
+	private ArrayList<Performance> getPerformances(String perfQueryString) {
+		ArrayList<Performance> performances = new ArrayList<Performance>();
+//		QueryFileParser qfp = new QueryFileParser("getShows.sql");
+//		String showQueryStub = qfp.getAllQueries().get(0);
+		
+		try {
+			ResultSet perfResults = executeQuery(perfQueryString);
+			while (perfResults.next()) {
+				int showID = perfResults.getInt("showID");
+				String showQuery = queries.get(0) + " WHERE Showing.ShowID = " + showID;
+				ResultSet showResults = executeQuery(showQuery);
+				Show s;
+				try {
+					showResults.next();
+					s = populateShow(showResults);
+				}
+				catch (SQLException e) {
+					e.printStackTrace();
+					return performances;
+				}
+				performances.add(populatePerformance(perfResults, s) );
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return performances;
+		}
+		return performances;
 	}
 	
 	private Performance populatePerformance(ResultSet rs, Show s) throws SQLException {
@@ -167,7 +194,6 @@ public class DBConnector {
 				
 		return true; //(or false if transaction didn't succeed)
 	}
-
 
 	public void close() {
 		try {

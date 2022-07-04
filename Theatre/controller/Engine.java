@@ -2,6 +2,8 @@ package controller;
 import util.QueryFileParser;
 
 import java.sql.ResultSet;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import model.Show;
@@ -63,9 +65,14 @@ public class Engine {
 				displayShows();
 				break;
 			case 3:
-				String searchDate = uip.getString( "Enter Date in dd-mm-yyyy format" ); //TODO: Decide on date search returns (show or performance)
-				showList = db.getShows(2, searchDate ); //by date
-				displayShows();
+				try {
+					LocalDate searchDate = uip.getDate(""); //TODO: Decide on date search returns (show or performance)
+//					showList = db.getShows(2, searchDate ); //by date
+//					displayShows();
+				}
+				catch (DateTimeParseException e) {
+					System.out.println("Your input could not be recognised as a date.");
+				}
 				break;
 			case 4:
 				//View Show Details
@@ -84,7 +91,7 @@ public class Engine {
 					System.out.println("No such show number in list of shows.");
 				}
 				else {
-					performanceList = db.getPerformances( showList.get(showIndex2-1).getID() );
+					performanceList = db.getPerformancesByShowID( showList.get(showIndex2-1).getID() );
 					displayPerformances();
 				}
 				break;
@@ -169,12 +176,18 @@ public class Engine {
 
 	
 	public void displayShows() {
+		if ( showList.isEmpty()) {
+			System.out.println("No hits.");
+		}
 		for (int i = 0; i<showList.size(); i++) {
 			System.out.println("Show "+ (i+1) +": " + showList.get(i).getTitle());
 		}
 	}
 	
 	public void displayPerformances() {
+		if ( performanceList.isEmpty()) {
+			System.out.println("No hits.");
+		}
 		for (int i = 0; i<performanceList.size(); i++) {
 			System.out.print("Performance "+ (i+1) + ": ");
 			performanceList.get(i).print();

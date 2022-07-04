@@ -1,6 +1,8 @@
 package util;
 
 import java.util.InputMismatchException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -36,5 +38,14 @@ public class UserInputParser {
         	reader.nextLine();
         	return input;
         }
+	}
+	
+	public LocalDate getDate(String prompt) throws DateTimeParseException {
+		//System.out.println(prompt);
+		System.out.println("Please enter the date in yyyy-mm-dd format.");
+		System.out.print("> ");
+		String input = reader.nextLine();
+		LocalDate date = LocalDate.parse(input);
+		return date;
 	}
 }
