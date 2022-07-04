@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,21 +18,11 @@ import model.PerformanceBooking;
 
 public class DBConnector {
 	private Connection conn;
-	private ArrayList<String> creationScript;
-	private ArrayList<String> queries;
+	private QueryFileParser qfp;
 
 	public DBConnector() {
 		conn = null;
-		creationScript = new ArrayList<String>();
-		queries = new ArrayList<String>();
-		{
-			QueryFileParser qfp = new QueryFileParser("getShows.sql");
-			queries.add( qfp.getAllQueries().get(0) );
-		}
-		{
-			QueryFileParser qfp = new QueryFileParser("getPerformances.sql");
-			queries.add( qfp.getAllQueries().get(0) );
-		}
+		qfp = new QueryFileParser();
 	}
 	
 	public void connect() {
@@ -59,7 +50,15 @@ public class DBConnector {
 		}
 	}
 
-	public ResultSet executeQuery(String sql) {
+	public void CreateDatabase() {
+		ArrayList<String> cre = qfp.getCreationScript();
+		for (int i = 0; i < cre.size(); i++ )
+		{
+			executeQuery(cre.get(i) + ";");
+		}
+	}
+	
+	private ResultSet executeQuery(String sql) {
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			pst.execute();
@@ -72,28 +71,18 @@ public class DBConnector {
 		}
 	}
 
-//	public ArrayList<Show> getAllShows() {
-//		
-//		return getShows(query);
-//	}
-	
-	//0 = everything
-	//1 = search by keyword
-	//2 = search by date
-	public ArrayList<Show> getShows(int filterType, String filter) {
-//		QueryFileParser qfp = new QueryFileParser("getShows.sql");
-//		String queryString = qfp.getAllQueries().get(0);
-		String queryString = queries.get(0);
-		if (filterType == 1) {
-			queryString += " WHERE title = \""+ filter+ "\"";
-		}
-		else if (filterType == 2) {
-			queryString += " WHERE DATE = "+ filter; //no. Will return performances or shows?
-		}
-		else {
-		}
-		
-		ResultSet results = executeQuery(queryString);
+	public ArrayList<Show> getAllShows() {
+		String query = qfp.getShow();
+		return getShows(query);
+	}
+
+	public ArrayList<Show> getShowsByTitle(String title) {
+		String query = qfp.getShow() + " WHERE title = \""+ title + "\"";
+		return getShows(query);
+	}
+
+	private ArrayList<Show> getShows(String query) {
+		ResultSet results = executeQuery(query);
 		ArrayList<Show> shows = new ArrayList<Show>();
 		try {
 			while (results.next()) {
@@ -108,29 +97,23 @@ public class DBConnector {
 	}
 	
 	public ArrayList<Performance> getPerformancesByShowID(int showID) {
-//		QueryFileParser qfp = new QueryFileParser("getPerformances.sql");
-//		String perfQueryString = qfp.getAllQueries().get(0);
-		String perfQueryString = queries.get(1) + " WHERE Showing.ShowID = " + showID;
+		String perfQueryString = qfp.getPerformance() + " WHERE Showing.ShowID = " + showID;
 		return getPerformances(perfQueryString);
 	}
 
-	public ArrayList<Performance> getPerformancesByDate(String date) {
-//		QueryFileParser qfp = new QueryFileParser("getPerformances.sql");
-//		String perfQueryString = qfp.getAllQueries().get(0);
-		String perfQueryString = queries.get(1) + " WHERE pdate = " + date;
+	public ArrayList<Performance> getPerformancesByDate(LocalDate date) {
+		String perfQueryString = qfp.getPerformance() + " WHERE pdate = '" + date.toString() + "'";
 		return getPerformances(perfQueryString);
 	}
 	
 	private ArrayList<Performance> getPerformances(String perfQueryString) {
 		ArrayList<Performance> performances = new ArrayList<Performance>();
-//		QueryFileParser qfp = new QueryFileParser("getShows.sql");
-//		String showQueryStub = qfp.getAllQueries().get(0);
 		
 		try {
 			ResultSet perfResults = executeQuery(perfQueryString);
 			while (perfResults.next()) {
 				int showID = perfResults.getInt("showID");
-				String showQuery = queries.get(0) + " WHERE Showing.ShowID = " + showID;
+				String showQuery = qfp.getShow() + " WHERE Showing.ShowID = " + showID;
 				ResultSet showResults = executeQuery(showQuery);
 				Show s;
 				try {
@@ -183,7 +166,13 @@ public class DBConnector {
 		//TODO: Making a purchase
 		
 		for (int i = 0; i<bookings.size(); i++) {
-			int perfID = bookings.get(i).getPerformance().getID();
+			PerformanceBooking pb = bookings.get(i);
+			
+			int perfID = pb.getPerformance().getID();
+			int kids = pb.getKids(); 
+			int adults = pb.getAdults();
+			Boolean stalls = pb.getStalls();
+			
 			//also get other details from each booking
 			
 			//run an sql update query using these details

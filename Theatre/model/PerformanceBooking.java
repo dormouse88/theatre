@@ -13,6 +13,14 @@ public class PerformanceBooking {
 		this.kids = kids;
 	}
 	
+	public int calculatePrice() {
+		int price = getPerformance().getPrice(); 
+		int total = 0;
+		total += getAdults() * price;
+		total += (int)(getKids() * price * 0.75);
+		return total;
+	}
+	
 	public Performance getPerformance() {
 		return perf;
 	}

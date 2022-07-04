@@ -6,18 +6,28 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class QueryFileParser {
-	private Scanner s;
-	
-	public QueryFileParser(String filename) {
-		s = null;
+	//basically could be a static class as it is now
+	public QueryFileParser() {
+	}
+
+	public ArrayList<String> getCreationScript() {
+		return getAllQueries("DB creation script.sql");
+	}
+	public String getShow() {
+		return getAllQueries("getShows.sql").get(0);
+	}
+	public String getPerformance() {
+		return getAllQueries("getPerformances.sql").get(0);
+	}
+
+	private ArrayList<String> getAllQueries(String filename) {
+		Scanner s = null;
 		try {
 			s = new Scanner(new File(filename));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public ArrayList<String> getAllQueries() {
+		
 		ArrayList<String> queries = new ArrayList<String>(); 
 		s.useDelimiter(";");
 		while ( s.hasNext() ) {
@@ -27,13 +37,8 @@ public class QueryFileParser {
 		
 		for (int i = 0; i< queries.size(); i++) {
 			String q = queries.get(i);
-//			if (q.endsWith(";")) {
-//				q = q.substring(0, q.length() -1);
-//			}
 		}
 		return queries;
 	}
-	
-	//TODO: Possibly add support for getting single queries
 
 };

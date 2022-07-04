@@ -30,24 +30,15 @@ public class Engine {
 	}
 	
 //TODO: Refactor Engine class (especially the switch)
+//TODO: Add user option to create Database?
 	
 	public void run() {
-		
-		//TODO: Automate initial database construction.
-		// WILL NEED THIS:
-//				QueryFileParser creation_sql = new QueryFileParser("DB creation script.sql");
-//				ArrayList<String> cre = creation_sql.getAllQueries();
-//				for (int i = 0; i < cre.size(); i++ )
-//				{
-//					db.executeQuery(cre.get(i) + ";");
-//				}
-				
 		
 		UserInputParser uip = new UserInputParser();
 		Boolean finished = false;
 		displayOptions(); //display options once when prog first starts
+		System.out.println("The use of a large console window is recommended");
 		while (!finished) {
-			//displayOptions();
 			int userInput = uip.getInt("Enter a number from the list of options or enter 0 to see the list: > ");
 	        if (userInput != 100 && userInput > 9)
 	        {
@@ -55,27 +46,26 @@ public class Engine {
 	        }
 
 			switch(userInput) {
-			case 1:
-				showList = db.getShows(0, ""); //all shows
+			case 1: //all shows
+				showList = db.getAllShows();
 				displayShows();
 				break;
-			case 2:
+			case 2: //shows by title
 				String searchTerm = uip.getString( "Enter Search Term" );
-				showList = db.getShows(1, searchTerm ); //by title
+				showList = db.getShowsByTitle(searchTerm ); 
 				displayShows();
 				break;
-			case 3:
+			case 3: //performances by date
 				try {
-					LocalDate searchDate = uip.getDate(""); //TODO: Decide on date search returns (show or performance)
-//					showList = db.getShows(2, searchDate ); //by date
-//					displayShows();
+					LocalDate searchDate = uip.getDate("");
+					performanceList = db.getPerformancesByDate(searchDate );
+					displayPerformances();
 				}
 				catch (DateTimeParseException e) {
 					System.out.println("Your input could not be recognised as a date.");
 				}
 				break;
-			case 4:
-				//View Show Details
+			case 4: //View Show Details
 				int showIndex = uip.getInt( "Enter Show Number" );
 				if (showIndex < 1 || showIndex > showList.size() + 1) {
 					System.out.println("No such show number in list of shows.");
@@ -84,8 +74,7 @@ public class Engine {
 					showList.get(showIndex).print();
 				}
 				break;
-			case 5:
-				//List Performances
+			case 5: //List Performances
 				int showIndex2 = uip.getInt( "Enter Show Number" );
 				if (showIndex2 < 1 || showIndex2 > showList.size() ) {
 					System.out.println("No such show number in list of shows.");
@@ -95,8 +84,7 @@ public class Engine {
 					displayPerformances();
 				}
 				break;
-			case 6:
-				//Make Purchase
+			case 6: //Make Purchase
 				if (! customer.isComplete()) {
 					System.out.println("Please enter your details fully before completing the purchase.");
 					break;
@@ -110,8 +98,7 @@ public class Engine {
 					System.out.println("Your basket has nothing in it.");
 				}
 				break;
-			case 7:
-				//Add a performance to basket
+			case 7: //Add a performance to basket
 				int perfIndex = uip.getInt( "Enter Performance Number" );
 				if (perfIndex < 1 || perfIndex > performanceList.size() + 1) {
 					System.out.println("No such performance number in list of performances.");
@@ -154,8 +141,7 @@ public class Engine {
 			case 8:
 				basket.displayBasket();
 				break;
-			case 9:
-				//enter customer details
+			case 9: //enter customer details
 				//TODO: Does the customer need to be able to check their entered details?
 				String custName = uip.getString( "Enter your name" );
 				String custAddress = uip.getString( "Enter your address" );

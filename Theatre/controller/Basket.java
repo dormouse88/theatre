@@ -26,9 +26,10 @@ public class Basket {
 			Performance perf = pb.getPerformance();
 			System.out.println("A performance of " + perf.getShow().getTitle() + " on " + perf.getDate() + " (" + perf.getMatString() + ").");
 			System.out.println(pb.getAdults() + " adults and " + pb.getKids() + " children seated in the "+ seatZone + ".");
-			System.out.println("Price: "+ perf.getPriceAsString( calculatePrice() ) );
+			System.out.println("Total price for this performance: "+ Performance.getPriceAsString( pb.calculatePrice() ) );
 			System.out.println();
 		}
+		System.out.println("Total price for your basket: "+ Performance.getPriceAsString( calculatePrice() ) );
 	}
 	public void clearBasket() {
 		bookings.clear();
@@ -36,9 +37,7 @@ public class Basket {
 	public int calculatePrice() {
 		int total = 0;
 		for (PerformanceBooking pb : bookings) {
-			int price = pb.getPerformance().getPrice(); 
-			total += pb.getAdults() * price;
-			total += (int)(pb.getKids() * price * 0.75);
+			total += pb.calculatePrice();
 		}
 		return total;
 	}
