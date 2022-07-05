@@ -33,8 +33,15 @@ public class Engine {
 	}
 	
 //TODO: Refactor Engine class (especially the switch)
-//Technical questions: testing, payment, (demonstrate principles with lesser coverage), music groups, 
-	
+//TODO: Should: Customer history
+//TODO: Should: Dynamic pricing
+//TODO: Should: Postage of tickets
+//TODO: multiple musicians per show?
+
+//TODO: return Strings from methods not println directly
+//TODO: Substitute a file for user input for running automated tests
+//TODO: Printing tickets to file for the user
+
 	public void run() {
 		db.createDatabase();
 		Boolean finished = false;
@@ -93,9 +100,15 @@ public class Engine {
 				}
 				ArrayList<PerformanceBooking> bookings = basket.getBookings();
 				if (bookings.size() > 0) {
-					int custCCN = uip.getInt( "Enter your credit card number" );
-					if ( custCCN == 0 ) {
+					String custCCN = uip.getString( "Enter your credit card number" );
+					long numeric = 0;
+					try {
+						numeric = Long.parseLong( custCCN );
+					}
+					catch (NumberFormatException e) {} // numeric stays as 0
+					if ( custCCN.length() != 16  || numeric == 0) {
 						System.out.println("Credit Card Declined!");
+						System.out.println("Credit card numbers must be 16 digits and numerals only.");
 					}
 					else {
 						boolean success = db.makePurchase( basket.getBookings() );
