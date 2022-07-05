@@ -107,80 +107,10 @@ public class Engine {
 				}
 				break;
 			case 6: //Make Purchase
-				if (customer == null) {
-					System.out.println("Please login or create an account before making a purchase.");
-					break;
-				}
-				if (! customer.isComplete()) {
-					System.out.println("Please enter your customer details fully before making a purchase.");
-					break;
-				}
-				ArrayList<PerformanceBooking> bookings = basket.getBookings();
-				if (bookings.size() > 0) {
-					String custCCN = uip.getString( "Enter your credit card number" );
-					long numeric = 0;
-					try {
-						numeric = Long.parseLong( custCCN );
-					}
-					catch (NumberFormatException e) {} // numeric stays as 0
-					if ( custCCN.length() != 16  || numeric == 0) {
-						System.out.println("Credit Card Declined!");
-						System.out.println("Credit card numbers must be 16 digits and numerals only.");
-					}
-					else {
-						boolean success = db.makePurchase( basket.getBookings() );
-						if (success) {
-							System.out.println("Payment taken. Your tickets have been successfully ordered.");
-							basket.clearBasket();
-						}
-						else {
-							System.out.println("Your purchase failed. You have not been charged.");
-						}
-					}
-				}
-				else {
-					System.out.println("Your basket has nothing in it.");
-				}
+				makePurchase();
 				break;
 			case 7: //Add a performance to basket
-				int perfIndex = uip.getInt( "Enter Performance Number" ) - 1;
-				if (perfIndex < 0 || perfIndex >= performanceList.size()) {
-					System.out.println("No such performance number in list of performances.");
-				}
-				else {
-					Performance perf = performanceList.get(perfIndex);
-					String seatZone = uip.getString( "Enter S for stalls seats or C for circle seats" );
-					Boolean stalls;
-					if (seatZone.equals("S")) {
-						stalls = true;
-					}
-					else if (seatZone.equals("C")) {
-						stalls = false;
-					}
-					else {
-						System.out.println("That's not a recognised seating area.");
-						break;
-					}
-					int kids = uip.getInt("Enter Number of Child Tickets Required");
-					int adults = uip.getInt("Enter Number of Adult Tickets Required");
-					int seatsAvailable = 0;
-					if (stalls == true) {
-						seatsAvailable = perf.getAvailabilityStalls();
-					}
-					else {
-						seatsAvailable = perf.getAvailabilityCircle();
-					}
-					if (kids + adults > seatsAvailable) {
-						System.out.println("There aren't enough seats available in your requested zone for your group.");
-						break;
-					}
-					if (kids + adults == 0) {
-						System.out.println("No seats requested. Nothing added to basket.");
-						break;
-					}
-					basket.addPerformance(perf, stalls, adults, kids);
-					System.out.println("Your basket has been updated.");
-				}
+				addToBasket();
 				break;
 			case 8:
 				basket.displayBasket();
@@ -198,7 +128,101 @@ public class Engine {
 		}
 		db.close();
 	}
-
+	
+	/**
+	 * Attempts to add a performance to the basket (along with information on seats required).
+	 * @return whether anything was actually added to the basket
+	 */
+	public Boolean addToBasket() {
+		Boolean success = false;
+		int perfIndex = uip.getInt( "Enter Performance Number" ) - 1;
+		if (perfIndex < 0 || perfIndex >= performanceList.size()) {
+			System.out.println("No such performance number in list of performances.");
+		}
+		else {
+			Performance perf = performanceList.get(perfIndex);
+			String seatZone = uip.getString( "Enter S for stalls seats or C for circle seats" );
+			Boolean stalls;
+			if (seatZone.equals("S")) {
+				stalls = true;
+			}
+			else if (seatZone.equals("C")) {
+				stalls = false;
+			}
+			else {
+				System.out.println("That's not a recognised seating area.");
+				return false;
+			}
+			int kids = uip.getInt("Enter Number of Child Tickets Required");
+			int adults = uip.getInt("Enter Number of Adult Tickets Required");
+			int seatsAvailable = 0;
+			if (stalls == true) {
+				seatsAvailable = perf.getAvailabilityStalls();
+			}
+			else {
+				seatsAvailable = perf.getAvailabilityCircle();
+			}
+			if (kids + adults > seatsAvailable) {
+				System.out.println("There aren't enough seats available in your requested zone for your group.");
+				return false;
+			}
+			if (kids + adults == 0) {
+				System.out.println("No seats requested. Nothing added to basket.");
+				return false;
+			}
+			basket.addPerformance(perf, stalls, adults, kids);
+			System.out.println("Your basket has been updated.");
+			success = true;
+		}
+		return success;
+	}
+	
+	
+	/**
+	 * Attempts to purchase the contents of the basket.
+	 * Either the entire purchase will succeed: all tickets will be booked and payment taken.
+	 * Or the entire purchase will fail: no tickets will be booked and no payment taken.
+	 * @return whether the purchase succeeded or not
+	 */
+	public Boolean makePurchase() {
+		Boolean success = false;
+		if (customer == null) {
+			System.out.println("Please login or create an account before making a purchase.");
+			return success;
+		}
+		if (! customer.isComplete()) {
+			System.out.println("Please enter your customer details fully before making a purchase.");
+			return success;
+		}
+		ArrayList<PerformanceBooking> bookings = basket.getBookings();
+		if (bookings.size() > 0) {
+			String custCCN = uip.getString( "Enter your credit card number" );
+			long numeric = 0;
+			try {
+				numeric = Long.parseLong( custCCN );
+			}
+			catch (NumberFormatException e) {} // numeric stays as 0
+			if ( custCCN.length() != 16  || numeric == 0) {
+				System.out.println("Credit Card Declined!");
+				System.out.println("Credit card numbers must be 16 digits and numerals only.");
+			}
+			else {
+				success = db.makePurchase( basket.getBookings() );
+				if (success) {
+					System.out.println("Payment taken. Your tickets have been successfully ordered.");
+					basket.clearBasket();
+				}
+				else {
+					System.out.println("Your purchase failed. You have not been charged.");
+				}
+			}
+		}
+		else {
+			System.out.println("Your basket has nothing in it.");
+		}
+		return success;
+	}
+	
 	/**
 	 * Attempts to login to a customer account using the provided username.
 	 * If no matching account is found, a new one is created on the database.

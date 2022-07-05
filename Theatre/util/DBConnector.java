@@ -176,15 +176,6 @@ public class DBConnector {
 		return c;
 	}
 
-	private Customer populateCustomer(ResultSet rs) throws SQLException {
-		return new Customer(
-//				rs.getInt("CustomerID"),
-				rs.getString("username"),
-				rs.getString("name"),
-				rs.getString("Address")
-				);
-	}
-	
 	/**
 	 * Closes the database connection.
 	 */
@@ -269,6 +260,15 @@ public class DBConnector {
 				);
 	}
 
+	private Customer populateCustomer(ResultSet rs) throws SQLException {
+		return new Customer(
+//				rs.getInt("CustomerID"),
+				rs.getString("username"),
+				rs.getString("name"),
+				rs.getString("Address")
+				);
+	}
+	
 	private int executeUpdate(String sql) {
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
