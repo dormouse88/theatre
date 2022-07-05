@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import model.Show;
+import model.Customer;
 import model.Performance;
 import model.PerformanceBooking;
 
@@ -15,16 +16,18 @@ import util.UserInputParser;
 
 public class Engine {
 	private Basket basket;
-	private CustomerDetails customer;
+	private Customer customer;
 	private ArrayList<Show> showList;
 	private ArrayList<Performance> performanceList;
+	private UserInputParser uip;
 	private DBConnector db;
 	
 	public Engine() {
 		basket = new Basket();
-		customer = new CustomerDetails();
+		customer = null;
 		showList = new ArrayList<Show>();
 		performanceList = new ArrayList<Performance>();
+		uip = new UserInputParser();
 		db = new DBConnector();
 		db.connect();
 	}
@@ -33,7 +36,7 @@ public class Engine {
 	
 	public void run() {
 		db.createDatabase();
-		UserInputParser uip = new UserInputParser();
+//		UserInputParser uip = new UserInputParser();
 		Boolean finished = false;
 		displayOptions(); //display options once when prog first starts
 		System.out.println("The use of a large console window is recommended");
@@ -65,8 +68,8 @@ public class Engine {
 				}
 				break;
 			case 4: //View Show Details
-				int showIndex = uip.getInt( "Enter Show Number" );
-				if (showIndex < 1 || showIndex > showList.size() + 1) {
+				int showIndex = uip.getInt( "Enter Show Number") - 1;
+				if (showIndex < 0 || showIndex >= showList.size()) {
 					System.out.println("No such show number in list of shows.");
 				}
 				else {
@@ -74,29 +77,35 @@ public class Engine {
 				}
 				break;
 			case 5: //List Performances
-				int showIndex2 = uip.getInt( "Enter Show Number" );
-				if (showIndex2 < 1 || showIndex2 > showList.size() ) {
+				int showIndex2 = uip.getInt( "Enter Show Number" ) - 1;
+				if (showIndex2 < 0 || showIndex2 >= showList.size() ) {
 					System.out.println("No such show number in list of shows.");
 				}
 				else {
-					performanceList = db.getPerformancesByShowID( showList.get(showIndex2-1).getID() );
+					performanceList = db.getPerformancesByShowID( showList.get(showIndex2).getID() );
 					displayPerformances();
 				}
 				break;
 			case 6: //Make Purchase
 				if (! customer.isComplete()) {
-					System.out.println("Please enter your details fully before completing the purchase.");
+					System.out.println("Please enter your customer details fully before making a purchase.");
 					break;
 				}
 				ArrayList<PerformanceBooking> bookings = basket.getBookings();
 				if (bookings.size() > 0) {
-					boolean success = db.makePurchase( basket.getBookings() );
-					if (success) {
-						System.out.println("Your tickets have been successfully ordered.");
-						basket.clearBasket();
+					int custCCN = uip.getInt( "Enter your credit card number" );
+					if ( custCCN == 0 ) {
+						System.out.println("Credit Card Declined!");
 					}
 					else {
-						System.out.println("Your purchase failed.");
+						boolean success = db.makePurchase( basket.getBookings() );
+						if (success) {
+							System.out.println("Payment taken. Your tickets have been successfully ordered.");
+							basket.clearBasket();
+						}
+						else {
+							System.out.println("Your purchase failed. You have not been charged.");
+						}
 					}
 				}
 				else {
@@ -104,12 +113,12 @@ public class Engine {
 				}
 				break;
 			case 7: //Add a performance to basket
-				int perfIndex = uip.getInt( "Enter Performance Number" );
-				if (perfIndex < 1 || perfIndex > performanceList.size() + 1) {
+				int perfIndex = uip.getInt( "Enter Performance Number" ) - 1;
+				if (perfIndex < 0 || perfIndex >= performanceList.size()) {
 					System.out.println("No such performance number in list of performances.");
 				}
 				else {
-					Performance perf = performanceList.get(perfIndex-1);
+					Performance perf = performanceList.get(perfIndex);
 					String seatZone = uip.getString( "Enter S for stalls seats or C for circle seats" );
 					Boolean stalls;
 					if (seatZone.equals("S")) {
@@ -146,12 +155,8 @@ public class Engine {
 			case 8:
 				basket.displayBasket();
 				break;
-			case 9: //enter customer details
-				//TODO: Does the customer need to be able to check their entered details?
-				String custName = uip.getString( "Enter your name" );
-				String custAddress = uip.getString( "Enter your address" );
-				int custCCN = uip.getInt( "Enter your credit card number" );
-				customer.enterDetails(custName, custAddress, custCCN);
+			case 9: //Create or login to customer account
+				customerLogin();
 				break;
 			case 100:
 				finished = true;
@@ -164,6 +169,22 @@ public class Engine {
 		db.close();
 	}
 
+	public void customerLogin() {
+		String username = uip.getString("Enter a username");
+		//query database for such a user account
+		Customer c = db.getCustomer(username);
+		if (c != null) {
+			//if exists, login to it
+			customer = c;
+		}
+		else {
+			//else create it (+be logged in)
+			String name = uip.getString("Enter your name");
+			String address = uip.getString("Enter your address");
+			customer = new Customer(username, name, address);
+			db.newCustomer(customer);
+		}
+	}
 	
 	public void displayShows() {
 		if ( showList.isEmpty()) {
@@ -185,6 +206,12 @@ public class Engine {
 	}
 
 	public void displayOptions() {
+		if (customer == null) {
+			System.out.println("Not Logged in.");
+		}
+		else {
+			System.out.println("Logged in as " + customer.getUsername() + ", name: " + customer.getName());
+		}
 		System.out.println("0 - Display Available Options");
 		System.out.println("1 - List Shows");
 		System.out.println("2 - List Shows By Title"); //{title}
@@ -194,7 +221,7 @@ public class Engine {
 		System.out.println("6 - Make Purchase");
 		System.out.println("7 - Add A Performance To Basket"); // {perf_index} {stalls} {adults} {kids}
 		System.out.println("8 - View Basket");
-		System.out.println("9 - Enter Customer Details"); // {name} {address} {cc}
+		System.out.println("9 - Create or Login to Customer Account"); // {name} {address} {cc}
 		System.out.println("100 - quit");
 		System.out.println();
 	}

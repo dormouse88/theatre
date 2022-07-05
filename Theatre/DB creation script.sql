@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Customer` (
   `lname` VARCHAR(45) NULL,
   `Email` VARCHAR(45) NULL,
   `Address` VARCHAR(45) NULL,
-  `PaymentID` INT NOT NULL,
+  `PaymentID` INT NULL,
   PRIMARY KEY (`CustomerID`),
   INDEX `fk_Customer_Payment1_idx` (`PaymentID` ASC) VISIBLE,
   UNIQUE INDEX `CustomerID_UNIQUE` (`CustomerID` ASC) VISIBLE,

@@ -15,6 +15,7 @@ import java.util.Scanner;
 import model.Show;
 import model.Performance;
 import model.PerformanceBooking;
+import model.Customer;
 
 /**
  * This class handles all database interactions for the Theatre application.
@@ -30,7 +31,7 @@ public class DBConnector {
 	}
 	
 	/**
-	 * Attempts to connect to an database.
+	 * Attempts to connect to a database.
 	 * Connection configuration can be set in connection.txt file.
 	 * Connection credentials can be set in credentials.txt file.
 	 */
@@ -145,6 +146,45 @@ public class DBConnector {
 		}
 	}
 
+	/**
+	 * Attempts to create a new customer account.
+	 * It fails if one already exists with that name.
+	 */
+	public Boolean newCustomer(Customer c) {
+		String update = "INSERT INTO Customer (fname, lname, address) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "')";
+		executeUpdate(update);
+		return true; //TODO: should check if insert worked
+	}
+	
+	/**
+	 * Retrieves a customer's details from a username.
+	 * @param username
+	 */
+	public Customer getCustomer(String username) {
+		String query = qfp.getCustomer() + " WHERE fname = '" + username + "'";
+		ResultSet results = executeQuery(query);
+		Customer c = null;
+		try {
+			if (results.next()) {
+				c = populateCustomer(results);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return c;
+	}
+
+	private Customer populateCustomer(ResultSet rs) throws SQLException {
+		return new Customer(
+//				rs.getInt("CustomerID"),
+				rs.getString("username"),
+				rs.getString("name"),
+				rs.getString("Address")
+				);
+	}
+	
 	/**
 	 * Closes the database connection.
 	 */

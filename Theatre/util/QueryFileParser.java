@@ -19,6 +19,9 @@ public class QueryFileParser {
 	public String getPerformance() {
 		return getAllQueries("getPerformances.sql").get(0);
 	}
+	public String getCustomer() {
+		return getAllQueries("getCustomer.sql").get(0);
+	}
 
 	private ArrayList<String> getAllQueries(String filename) {
 		Scanner s = null;
