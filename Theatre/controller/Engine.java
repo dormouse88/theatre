@@ -14,6 +14,20 @@ import model.PerformanceBooking;
 import util.DBConnector;
 import util.UserInputParser;
 
+/**
+ * The main class of the Theatre application containing the execution loop.
+ * 
+ * The most recent search for shows or performances is cached in the ArrayList fields.
+ * These cached searches are used to allow the user to refer to a particular show
+ * or performance for other actions (adding to basket, etc) by means of the index
+ * position of each show/performance in the container. 
+ * 
+ * The customer field represents a customer account and is null if not logged in.
+ * 
+ * The basket holds all the items the user has selected for purchase and is cleared
+ * when they are successfully purchased.
+ * @author dor
+ */
 public class Engine {
 	private Basket basket;
 	private Customer customer;
@@ -42,17 +56,16 @@ public class Engine {
 //TODO: Substitute a file for user input for running automated tests
 //TODO: Printing tickets to file for the user
 
+	/**
+	 * The main execution loop.
+	 */
 	public void run() {
 		db.createDatabase();
 		Boolean finished = false;
 		displayOptions(); //display options once when prog first starts
 		System.out.println("The use of a large console window is recommended");
 		while (!finished) {
-			int userInput = uip.getInt("Enter a number from the list of options or enter 0 to see the list: > ");
-	        if (userInput != 100 && userInput > 9)
-	        {
-	        	userInput = 0;
-	        }
+			int userInput = uip.getInt("Enter a number from the list of options or enter 0 to see the list:");
 
 			switch(userInput) {
 			case 1: //all shows
@@ -94,6 +107,10 @@ public class Engine {
 				}
 				break;
 			case 6: //Make Purchase
+				if (customer == null) {
+					System.out.println("Please login or create an account before making a purchase.");
+					break;
+				}
 				if (! customer.isComplete()) {
 					System.out.println("Please enter your customer details fully before making a purchase.");
 					break;
@@ -171,10 +188,10 @@ public class Engine {
 			case 9: //Create or login to customer account
 				customerLogin();
 				break;
-			case 100:
+			case 100: //quit
 				finished = true;
 				break;
-			default:
+			default: //any other user input will display the list of options
 				displayOptions();
 				break;
 			}
@@ -182,6 +199,10 @@ public class Engine {
 		db.close();
 	}
 
+	/**
+	 * Attempts to login to a customer account using the provided username.
+	 * If no matching account is found, a new one is created on the database.
+	 */
 	public void customerLogin() {
 		String username = uip.getString("Enter a username");
 		//query database for such a user account
@@ -198,7 +219,13 @@ public class Engine {
 			db.newCustomer(customer);
 		}
 	}
-	
+
+	/**
+	 * Prints to the screen the cached list of shows.
+	 * Only the name of the show is displayed.
+	 * Each show is numbered with an index that the user can use
+	 * to select the show (eg. to browse the performances of that show)
+	 */
 	public void displayShows() {
 		if ( showList.isEmpty()) {
 			System.out.println("No hits.");
@@ -208,6 +235,12 @@ public class Engine {
 		}
 	}
 	
+	/**
+	 * Prints to the screen the cached list of performances with all their details.
+	 * The cache is populated from the most recent search for performances.
+	 * Each performance is numbered with an index that the user can use
+	 * to select the performance (eg. to book tickets for it) 
+	 */
 	public void displayPerformances() {
 		if ( performanceList.isEmpty()) {
 			System.out.println("No hits.");
@@ -218,12 +251,16 @@ public class Engine {
 		}
 	}
 
+	/**
+	 * Prints to the screen the list of primary options available to the user.
+	 * Additionally shows the login status of the customer account.
+	 */
 	public void displayOptions() {
 		if (customer == null) {
 			System.out.println("Not Logged in.");
 		}
 		else {
-			System.out.println("Logged in as " + customer.getUsername() + ", name: " + customer.getName());
+			System.out.println("Logged in as " + customer.getUsername() + ", name: " + customer.getName() + ", address: "+ customer.getAddress());
 		}
 		System.out.println("0 - Display Available Options");
 		System.out.println("1 - List Shows");

@@ -2,7 +2,7 @@ package model;
 
 /**
  * This class models customers and corresponds to customer data in the database.
- * @author dor
+ * @author dor and Mariam Sharp
  */
 public class Customer {
 //	private int id;
