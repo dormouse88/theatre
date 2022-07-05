@@ -1,5 +1,9 @@
 package model;
 
+/**
+ * This class models customers and corresponds to customer data in the database.
+ * @author dor
+ */
 public class Customer {
 //	private int id;
 	private String username;
@@ -13,6 +17,10 @@ public class Customer {
 		this.address = address;
 	}
 
+	/**
+	 * Checks if all necessary customer details are entered for a payment
+	 * @return true If details are complete
+	 */
 	public Boolean isComplete(){
 		Boolean checked = true;
 		if (name == null || name.isBlank()) {

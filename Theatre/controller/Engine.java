@@ -33,10 +33,10 @@ public class Engine {
 	}
 	
 //TODO: Refactor Engine class (especially the switch)
+//Technical questions: testing, payment, (demonstrate principles with lesser coverage), music groups, 
 	
 	public void run() {
 		db.createDatabase();
-//		UserInputParser uip = new UserInputParser();
 		Boolean finished = false;
 		displayOptions(); //display options once when prog first starts
 		System.out.println("The use of a large console window is recommended");
