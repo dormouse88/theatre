@@ -4,6 +4,7 @@
 package model;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -30,18 +31,23 @@ class PerformanceTest {
 	String description = "description of show";
 	int duration = 120;
 	String language = "english";
-	String performer = "Performer1";
-	Show show = new Show(showID, title, type, description, duration, language, performer);
 	
 	LocalDate date = LocalDate.of(2022, 7, 22);
 	Boolean isMatinee = true;
 	int availabilityStalls = 120;
 	int availabilityCircle = 80;
-	int price = 50;
+	int priceStalls = 450;
+	int priceCircle = 2450;
+	
+	Show show = null;
 
 	@BeforeEach
 	public void setUp() {
 	    System.setOut(new PrintStream(outputStreamCaptor));
+		ArrayList<String> performers = new ArrayList<String>();
+		performers.add("Performer1");
+		performers.add("Performer2");
+		show = new Show(showID, title, type, description, duration, language, performers );
 	}
 	
 	@AfterEach
@@ -55,7 +61,7 @@ class PerformanceTest {
 	@Test
 	void testPerformanceConstructor() {
 		
-		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, price);
+		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle);
 		
 		assertNotNull(performance, "Verify performance constructor");
 		assertEquals(id, performance.getID(),"Verify getID");
@@ -64,7 +70,8 @@ class PerformanceTest {
 		assertEquals(isMatinee,performance.getMatinee(),"Verify getMatinee");
 	    assertEquals(availabilityStalls,performance.getAvailabilityStalls(),"Verify getAvailabilityStalls");
 		assertEquals(availabilityCircle,performance.getAvailabilityCircle(),"Verify getAvailabilityCircle");
-		assertEquals(price, performance.getPrice(), "Verify getPrice");
+		assertEquals(priceStalls, performance.getPriceStalls(), "Verify getPrice");
+		assertEquals(priceCircle, performance.getPriceCircle(), "Verify getPrice");
 	}
 
 	/**
@@ -73,7 +80,7 @@ class PerformanceTest {
 	@Test
 	void testPrint() {
 		
-		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, price);
+		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle );
 		performance.print();
 		
 		assertTrue(outputStreamCaptor.toString().contains(performance.getShow().getTitle()), "Verify title is printed out.");
@@ -89,11 +96,11 @@ class PerformanceTest {
 	void testGetMatString() {
 		
 		isMatinee = true;
-		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, price);
+		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle,  priceStalls, priceCircle );
 		assertEquals("matinee", performance.getMatString(), "Verify getMatString matinee");
 		
 		isMatinee = false;
-		Performance performance2 = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, price);
+		Performance performance2 = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle,  priceStalls, priceCircle);
 		assertEquals("evening", performance2.getMatString(), "Verify getMatString evening");
 	}
 
@@ -102,7 +109,7 @@ class PerformanceTest {
 	 */
 	@Test
 	void testGetPriceAsString() {
-		price=5525;
+		int price=5525;
 		assertEquals("£55.25", Performance.getPriceAsString(price), "Verify getPriceAsString");
 	}
 
