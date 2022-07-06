@@ -30,6 +30,10 @@ public class QueryFileParser {
 	public String getPerformers() {
 		return getAllQueries("getPerformers.sql").get(0);
 	}
+	public String updateSeats() {
+		return getAllQueries("updateSeats.sql").get(0);
+	}
+	
 
 	/**
 	 * Parses an SQL file and splits it into a separate string for each query.

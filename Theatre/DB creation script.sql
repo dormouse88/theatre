@@ -78,39 +78,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Theatre`.`Ticket`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Theatre`.`Ticket` (
-  `TicketID` INT NOT NULL AUTO_INCREMENT,
-  `NumberOfTickets` INT NULL,
-  `Cost` INT NULL,
-  `CustomerID` INT NOT NULL,
-  `PaymentID` INT NOT NULL,
-  `ShowingID` INT NOT NULL,
-  PRIMARY KEY (`TicketID`),
-  INDEX `fk_Ticket_Customer1_idx` (`CustomerID` ASC) VISIBLE,
-  INDEX `fk_Ticket_Payment1_idx` (`PaymentID` ASC) VISIBLE,
-  INDEX `fk_Ticket_Show1_idx` (`ShowingID` ASC) VISIBLE,
-  UNIQUE INDEX `TicketID_UNIQUE` (`TicketID` ASC) VISIBLE,
-  CONSTRAINT `fk_Ticket_Customer1`
-    FOREIGN KEY (`CustomerID`)
-    REFERENCES `Theatre`.`Customer` (`CustomerID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Ticket_Payment1`
-    FOREIGN KEY (`PaymentID`)
-    REFERENCES `Theatre`.`Payment` (`PaymentID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Ticket_Show1`
-    FOREIGN KEY (`ShowingID`)
-    REFERENCES `Theatre`.`Showing` (`ShowingID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `Theatre`.`Performance`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Performance` (
@@ -124,6 +91,39 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Performance` (
   CONSTRAINT `fk_Performance_Show1`
     FOREIGN KEY (`ShowingID`)
     REFERENCES `Theatre`.`Showing` (`ShowingID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `Theatre`.`Ticket`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Theatre`.`Ticket` (
+  `TicketID` INT NOT NULL AUTO_INCREMENT,
+  `NumberOfTickets` INT NULL,
+  `Cost` INT NULL,
+  `CustomerID` INT NOT NULL,
+  `PaymentID` INT NOT NULL,
+  `PerformanceID` INT NOT NULL,
+  PRIMARY KEY (`TicketID`),
+  INDEX `fk_Ticket_Customer1_idx` (`CustomerID` ASC) VISIBLE,
+  INDEX `fk_Ticket_Payment1_idx` (`PaymentID` ASC) VISIBLE,
+  UNIQUE INDEX `TicketID_UNIQUE` (`TicketID` ASC) VISIBLE,
+  INDEX `fk_Ticket_Performance1_idx` (`PerformanceID` ASC) VISIBLE,
+  CONSTRAINT `fk_Ticket_Customer1`
+    FOREIGN KEY (`CustomerID`)
+    REFERENCES `Theatre`.`Customer` (`CustomerID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Ticket_Payment1`
+    FOREIGN KEY (`PaymentID`)
+    REFERENCES `Theatre`.`Payment` (`PaymentID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Ticket_Performance1`
+    FOREIGN KEY (`PerformanceID`)
+    REFERENCES `Theatre`.`Performance` (`PerformanceID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -211,5 +211,5 @@ INSERT INTO Showing (Title, Duration, Lang, Info, ShowTypeID) VALUES ("Mamma Mia
 INSERT INTO Performer (pname) VALUES ("MammaMiaGroup");
 INSERT INTO ShowingPerformer(ShowingID, PerformerID) VALUES (1,1); 
 INSERT INTO Performance (pdate, ptime, ShowingID) VALUES ("2022-07-13", "Matinee", 1);
-INSERT INTO Ticket (NumberOfTickets, Cost, CustomerID, PaymentID, ShowingID) VALUES (1,4000,1,1,1);
+INSERT INTO Ticket (NumberOfTickets, Cost, CustomerID, PaymentID, PerformanceID) VALUES (1,4000,1,1,1);
 INSERT INTO Seat (SeatZone, NumberOfSeats, Price, PerformanceID) VALUES ("Circle", 80, 4000, 1), ("Stalls", 120, 4000, 1); 

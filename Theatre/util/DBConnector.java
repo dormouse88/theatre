@@ -126,12 +126,25 @@ public class DBConnector {
 			Boolean stalls = pb.getStalls();
 			
 			//run an sql update query using these details
-			String seatZone = "NumberOfSeatsCircle";
+			String seatZone = "Circle";
 			if (stalls) {
-				seatZone = "NumberOfSeatsStalls";
+				seatZone = "Stalls";
 			}
-			String update = "UPDATE Performance SET "+seatZone+" = "+seatZone+" - "+seats+" WHERE PerformanceID = " +perfID+ " AND "+seatZone+" >= "+seats+";";
-			int matches = executeUpdate(update);
+			
+			int matches = 0;
+			try {
+				String update = qfp.updateSeats();
+				PreparedStatement pst = conn.prepareStatement(update);
+				pst.setInt(1, seats);
+				pst.setInt(2, perfID);
+				pst.setString(3, seatZone);
+				pst.setInt(4, seats);
+				matches = pst.executeUpdate();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+				//matches stays at 0
+			}
 			if (matches == 0) {
 				failures++;
 			}
@@ -151,7 +164,7 @@ public class DBConnector {
 	 * It fails if one already exists with that name.
 	 */
 	public Boolean newCustomer(Customer c) {
-		String update = "INSERT INTO Customer (fname, lname, address) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "')";
+		String update = "INSERT INTO Customer (Username, lname, address, password) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "', 'P4$$WORD')";
 		int matches = executeUpdate(update);  //this MIGHT give false positives if this update fails because of unique constraint.
 		return matches != 0;
 	}
@@ -161,7 +174,7 @@ public class DBConnector {
 	 * @param username
 	 */
 	public Customer getCustomer(String username) {
-		String query = qfp.getCustomer() + " WHERE fname = '" + username + "'";
+		String query = qfp.getCustomer() + " WHERE Username = '" + username + "'";
 		ResultSet results = executeQuery(query);
 		Customer c = null;
 		try {
@@ -219,16 +232,6 @@ public class DBConnector {
 				int showID = perfResults.getInt("Performance.ShowingID");
 				String showQuery = qfp.getShow() + " WHERE Showing.ShowingID = " + showID;
 				Show s = getShows(showQuery).get(0);
-//				ResultSet showResults = executeQuery(showQuery);
-//				Show s;
-//				try {
-//					showResults.next();
-//					s = populateShow(showResults);
-//				}
-//				catch (SQLException e) {
-//					e.printStackTrace();
-//					return performances;
-//				}
 				performances.add(populatePerformance(perfResults, s) );
 			}
 		}
@@ -270,9 +273,8 @@ public class DBConnector {
 
 	private Customer populateCustomer(ResultSet rs) throws SQLException {
 		return new Customer(
-//				rs.getInt("CustomerID"),
 				rs.getString("username"),
-				rs.getString("name"),
+				rs.getString("lname"),
 				rs.getString("Address")
 				);
 	}

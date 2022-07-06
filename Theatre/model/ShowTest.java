@@ -38,7 +38,6 @@ class ShowTest {
 			String description = "description of show";
 			int duration = 120;
 			String language = "english";
-			String performer = "Performer1";
 			ArrayList<String> performers = new ArrayList<String>();
 			performers.add("Performer1");
 			performers.add("Performer2");

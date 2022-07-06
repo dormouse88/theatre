@@ -46,14 +46,12 @@ public class Engine {
 		db.connect();
 	}
 	
-//TODO: Refactor Engine class (especially the switch)
-//TODO: Support different prices for different seating zones
 //TODO: Should: Customer history
 //TODO: Should: Dynamic pricing
 //TODO: Should: Postage of tickets
-//TODO: multiple musicians per show?
 //TODO: Substitute a file for user input for running automated tests
 //TODO: Printing tickets to file for the user
+//TODO: SQL Injection protection
 
 	/**
 	 * The main execution loop.
