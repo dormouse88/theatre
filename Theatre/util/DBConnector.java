@@ -93,7 +93,7 @@ public class DBConnector {
 	 * @param showID The primary key of the matching show
 	 */
 	public ArrayList<Performance> getPerformancesByShowID(int showID) {
-		String perfQueryString = qfp.getPerformance() + " WHERE Showing.ShowID = " + showID;
+		String perfQueryString = qfp.getPerformance() + " AND Performance.ShowingID = " + showID;
 		return getPerformances(perfQueryString);
 	}
 
@@ -195,11 +195,11 @@ public class DBConnector {
 		ArrayList<Show> shows = new ArrayList<Show>();
 		try {
 			while (results.next()) {
-				String performerQuery = "";
+				String performerQuery = qfp.getPerformers() + " WHERE Showing.ShowID = " + results.getInt("showID");
 				ResultSet performerResults = executeQuery(performerQuery);
 				ArrayList<String> s = new ArrayList<String>();
 				while (performerResults.next()) {
-					s.add( performerResults.getString("name") );
+					s.add( performerResults.getString("pname") );
 				}
 				shows.add(populateShow(results, s));
 			}
@@ -216,7 +216,7 @@ public class DBConnector {
 		try {
 			ResultSet perfResults = executeQuery(perfQueryString);
 			while (perfResults.next()) {
-				int showID = perfResults.getInt("showID");
+				int showID = perfResults.getInt("Performance.ShowingID");
 				String showQuery = qfp.getShow() + " WHERE Showing.ShowID = " + showID;
 				Show s = getShows(showQuery).get(0);
 //				ResultSet showResults = executeQuery(showQuery);
@@ -251,7 +251,8 @@ public class DBConnector {
 				mat,
 				rs.getInt("StallSeats"),
 				rs.getInt("CircleSeats"),
-				rs.getInt("Price")
+				rs.getInt("StallPrice"),
+				rs.getInt("CirclePrice")
 				);
 	}
 	

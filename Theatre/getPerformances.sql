@@ -1,13 +1,20 @@
 SELECT 
-	PerformanceID,
-	ShowID,
+	Performance.PerformanceID,
+	Performance.ShowingID,
 	pdate,
 	ptime,
-    NumberOfSeatsCircle AS CircleSeats,
-    NumberOfSeatsStalls AS StallSeats,
-	Price
+    A.NumberOfSeats AS StallSeats,
+    A.Price AS StallPrice,
+    B.NumberOfSeats AS CircleSeats,
+    B.Price AS CirclePrice
 FROM
     Performance
-        JOIN
-    Showing ON Showing.ShowID = Performance.ShowingID;
--- title can be changed to accept user input/search
+        LEFT JOIN
+    Seat AS A ON A.PerformanceID = Performance.PerformanceID
+        LEFT JOIN
+    Seat AS B ON B.PerformanceID = Performance.PerformanceID
+WHERE
+	A.SeatZone = "stalls"
+	AND
+	B.SeatZone = "circle";
+	

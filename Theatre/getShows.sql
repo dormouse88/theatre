@@ -5,13 +5,10 @@ SELECT
     Duration AS RunTimeMinutes,
     Lang AS Language,
     Info AS Description,
-    ShowType.Genre AS Genre,
-	Performer_PerformerID AS Performer
+    ShowType.Genre AS Genre
 FROM
     Showing
         JOIN
     ShowType
-		ON Showing.ShowTypeID = ShowType.ShowTypeID
-		JOIN
-	Performer
-		ON Performer.PerformerID = Showing.Performer_PerformerID;
+		ON Showing.ShowTypeID = ShowType.ShowTypeID;
+		

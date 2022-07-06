@@ -14,7 +14,13 @@ public class PerformanceBooking {
 	}
 	
 	public int calculatePrice() {
-		int price = getPerformance().getPrice(); 
+		int price = 0;
+		if (stalls) {
+			price = getPerformance().getPriceStalls();
+		}
+		else {
+			price = getPerformance().getPriceCircle();
+		}
 		int total = 0;
 		total += getAdults() * price;
 		total += (int)(getKids() * price * 0.75);

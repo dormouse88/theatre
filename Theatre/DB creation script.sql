@@ -1,21 +1,13 @@
--- MySQL Workbench Forward Engineering
-
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
--- -----------------------------------------------------
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';-- -----------------------------------------------------
 -- Schema Theatre
--- -----------------------------------------------------
-
--- -----------------------------------------------------
+-- ------------------------------------------------------- -----------------------------------------------------
 -- Schema Theatre
 -- -----------------------------------------------------
 DROP SCHEMA IF EXISTS Theatre;
 CREATE SCHEMA IF NOT EXISTS `Theatre` DEFAULT CHARACTER SET utf8 ;
-USE `Theatre` ;
-
--- -----------------------------------------------------
+USE `Theatre` ;-- -----------------------------------------------------
 -- Table `Theatre`.`Customer`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Customer` (
@@ -29,10 +21,7 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Customer` (
   PRIMARY KEY (`CustomerID`),
   UNIQUE INDEX `CustomerID_UNIQUE` (`CustomerID` ASC) VISIBLE,
   UNIQUE INDEX `Username_UNIQUE` (`Username` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
+ENGINE = InnoDB;-- -----------------------------------------------------
 -- Table `Theatre`.`Payment`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Payment` (
@@ -42,10 +31,7 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Payment` (
   `PaymentAmount` INT NULL,
   PRIMARY KEY (`PaymentID`),
   UNIQUE INDEX `PaymentID_UNIQUE` (`PaymentID` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
+ENGINE = InnoDB;-- -----------------------------------------------------
 -- Table `Theatre`.`ShowType`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`ShowType` (
@@ -53,10 +39,7 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`ShowType` (
   `Genre` VARCHAR(45) NULL,
   PRIMARY KEY (`ShowTypeID`),
   UNIQUE INDEX `ShowTypeID_UNIQUE` (`ShowTypeID` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
+ENGINE = InnoDB;-- -----------------------------------------------------
 -- Table `Theatre`.`Showing`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Showing` (
@@ -74,10 +57,7 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Showing` (
     REFERENCES `Theatre`.`ShowType` (`ShowTypeID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
+ENGINE = InnoDB;-- -----------------------------------------------------
 -- Table `Theatre`.`Ticket`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Ticket` (
@@ -107,19 +87,13 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Ticket` (
     REFERENCES `Theatre`.`Showing` (`ShowID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
+ENGINE = InnoDB;-- -----------------------------------------------------
 -- Table `Theatre`.`Performance`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Performance` (
   `PerformanceID` INT NOT NULL AUTO_INCREMENT,
   `pdate` DATE NULL,
   `ptime` VARCHAR(45) NULL,
-  `NumberOfSeatsCircle` INT NULL,
-  `NumberOfSeatsStalls` INT NULL,
-  `Price` INT NULL,
   `ShowingID` INT NOT NULL,
   PRIMARY KEY (`PerformanceID`),
   INDEX `fk_Performance_Show1_idx` (`ShowingID` ASC) VISIBLE,
@@ -129,28 +103,15 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Performance` (
     REFERENCES `Theatre`.`Showing` (`ShowID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
+ENGINE = InnoDB;-- -----------------------------------------------------
 -- Table `Theatre`.`Performer`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Performer` (
   `PerformerID` INT NOT NULL AUTO_INCREMENT,
-  `GroupName` VARCHAR(70) NULL,
-  `ShowID` INT NOT NULL,
+  `pname` VARCHAR(70) NULL,
   PRIMARY KEY (`PerformerID`),
-  UNIQUE INDEX `PerformerID_UNIQUE` (`PerformerID` ASC) VISIBLE,
-  INDEX `fk_Performer_Showing1_idx` (`ShowID` ASC) VISIBLE,
-  CONSTRAINT `fk_Performer_Showing1`
-    FOREIGN KEY (`ShowID`)
-    REFERENCES `Theatre`.`Showing` (`ShowID`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
+  UNIQUE INDEX `PerformerID_UNIQUE` (`PerformerID` ASC) VISIBLE)
+ENGINE = InnoDB;-- -----------------------------------------------------
 -- Table `Theatre`.`Employee`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `Theatre`.`Employee` (
@@ -161,61 +122,51 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Employee` (
   `address` VARCHAR(45) NULL,
   PRIMARY KEY (`EmployeeID`),
   UNIQUE INDEX `EmployeeID_UNIQUE` (`EmployeeID` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
+ENGINE = InnoDB;-- -----------------------------------------------------
+-- Table `Theatre`.`Seat`
 -- -----------------------------------------------------
--- Table `Theatre`.`Pricing`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Theatre`.`Pricing` (
-  `PricingID` INT NOT NULL,
-  `Performance_PerformanceID` INT NOT NULL,
-  `Showing_ShowID` INT NOT NULL,
-  PRIMARY KEY (`PricingID`),
-  INDEX `fk_Pricing_Performance1_idx` (`Performance_PerformanceID` ASC) VISIBLE,
-  INDEX `fk_Pricing_Showing1_idx` (`Showing_ShowID` ASC) VISIBLE,
-  CONSTRAINT `fk_Pricing_Performance1`
-    FOREIGN KEY (`Performance_PerformanceID`)
+CREATE TABLE IF NOT EXISTS `Theatre`.`Seat` (
+  `SeatID` INT NOT NULL AUTO_INCREMENT,
+  `SeatZone` VARCHAR(6) NULL,
+  `Price` INT NULL,
+  `NumberOfSeats` INT NULL,
+  `PerformanceID` INT NOT NULL,
+  PRIMARY KEY (`SeatID`),
+  INDEX `fk_Seat_Performance1_idx` (`PerformanceID` ASC) VISIBLE,
+  CONSTRAINT `fk_Seat_Performance1`
+    FOREIGN KEY (`PerformanceID`)
     REFERENCES `Theatre`.`Performance` (`PerformanceID`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pricing_Showing1`
-    FOREIGN KEY (`Showing_ShowID`)
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;-- -----------------------------------------------------
+-- Table `Theatre`.`ShowingPerformer`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `Theatre`.`ShowingPerformer` (
+  `ShowID` INT NOT NULL,
+  `PerformerID` INT NOT NULL,
+  INDEX `fk_ShowingPerformer_Showing2_idx` (`ShowID` ASC) VISIBLE,
+  INDEX `fk_ShowingPerformer_Performer1_idx` (`PerformerID` ASC) VISIBLE,
+  PRIMARY KEY (`ShowID`, `PerformerID`),
+  CONSTRAINT `fk_ShowingPerformer_Showing2`
+    FOREIGN KEY (`ShowID`)
     REFERENCES `Theatre`.`Showing` (`ShowID`)
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `Theatre`.`GroupMembers`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Theatre`.`GroupMembers` (
-  `GroupMembersID` INT NOT NULL AUTO_INCREMENT,
-  `mname` VARCHAR(45) NULL,
-  `PerformerID` INT NOT NULL,
-  PRIMARY KEY (`GroupMembersID`),
-  INDEX `fk_GroupMembers_Performer1_idx` (`PerformerID` ASC) VISIBLE,
-  CONSTRAINT `fk_GroupMembers_Performer1`
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_ShowingPerformer_Performer1`
     FOREIGN KEY (`PerformerID`)
     REFERENCES `Theatre`.`Performer` (`PerformerID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
+ENGINE = InnoDB;SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
-
--- test inserts into all tables
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;-- test inserts into all tables
 INSERT INTO Employee (fname, lname, email, address) VALUES ("John", "Doe", "JDoe@TR.com", "32 Oliver Dr");
 INSERT INTO Payment (CardDetails, PaymentDate, PaymentAmount) VALUES ("4548493283237532", curdate(), 4000);
-INSERT INTO Customer (fname, lname, email, address, username, password) VALUES ("Jane", "Doe", "JDoes@email.com", "33 Oliver Dr", "JaDo", "password"); 
+INSERT INTO Customer (fname, lname, email, address, username, password) VALUES ("Jane", "Doe", "JDoes@email.com", "33 Oliver Dr", "JaDo", "password");
 INSERT INTO ShowType (Genre) VALUES ("Theatre"), ("Musical"), ("Opera"), ("Concert");
 INSERT INTO Showing (Title, Duration, Lang, Info, ShowTypeID) VALUES ("Mamma Mia", 195, "English", "Mamma Mia! is a jukebox musical written by British playwright Catherine Johnson, based on the songs of ABBA composed by Benny Andersson and Björn Ulvaeus, members of the band. The title of the musical is taken from the group's 1975 chart-topper 'Mamma Mia'.",2);
-INSERT INTO Performer (GroupName, ShowID) VALUES ("MammaMiaGroup", 1);
-INSERT INTO GroupMembers (mname, performerID) VALUES ("Jack Danson", 1), ("Emma Mullen", 1);
-INSERT INTO Performance (pdate, ptime, NumberOfSeatsCircle, NumberOfSeatsStalls, price, ShowingID) VALUES ("2022-07-13", "Matinee", 80, 120, 4000, 1);
+INSERT INTO Performer (pname) VALUES ("MammaMiaGroup");
+INSERT INTO ShowingPerformer(ShowID, PerformerID) VALUES (1,1);
+INSERT INTO Performance (pdate, ptime, ShowingID) VALUES ("2022-07-13", "Matinee", 1);
 INSERT INTO Ticket (NumberOfTickets, Cost, CustomerID, PaymentID, ShowingID) VALUES (1,4000,1,1,1);
+INSERT INTO Seat (SeatZone, NumberOfSeats, Price, PerformanceID) VALUES ("Circle", 80, 4000, 1), ("Stalls", 120, 4000, 1);
