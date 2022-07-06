@@ -152,8 +152,8 @@ public class DBConnector {
 	 */
 	public Boolean newCustomer(Customer c) {
 		String update = "INSERT INTO Customer (fname, lname, address) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "')";
-		executeUpdate(update);
-		return true; //TODO: should check if insert worked
+		int matches = executeUpdate(update);  //this MIGHT give false positives if this update fails because of unique constraint.
+		return matches != 0;
 	}
 	
 	/**
@@ -195,7 +195,13 @@ public class DBConnector {
 		ArrayList<Show> shows = new ArrayList<Show>();
 		try {
 			while (results.next()) {
-				shows.add(populateShow(results) );
+				String performerQuery = "";
+				ResultSet performerResults = executeQuery(performerQuery);
+				ArrayList<String> s = new ArrayList<String>();
+				while (performerResults.next()) {
+					s.add( performerResults.getString("name") );
+				}
+				shows.add(populateShow(results, s));
 			}
 		}
 		catch (SQLException e) {
@@ -212,16 +218,17 @@ public class DBConnector {
 			while (perfResults.next()) {
 				int showID = perfResults.getInt("showID");
 				String showQuery = qfp.getShow() + " WHERE Showing.ShowID = " + showID;
-				ResultSet showResults = executeQuery(showQuery);
-				Show s;
-				try {
-					showResults.next();
-					s = populateShow(showResults);
-				}
-				catch (SQLException e) {
-					e.printStackTrace();
-					return performances;
-				}
+				Show s = getShows(showQuery).get(0);
+//				ResultSet showResults = executeQuery(showQuery);
+//				Show s;
+//				try {
+//					showResults.next();
+//					s = populateShow(showResults);
+//				}
+//				catch (SQLException e) {
+//					e.printStackTrace();
+//					return performances;
+//				}
 				performances.add(populatePerformance(perfResults, s) );
 			}
 		}
@@ -248,7 +255,7 @@ public class DBConnector {
 				);
 	}
 	
-	private Show populateShow(ResultSet rs) throws SQLException {
+	private Show populateShow(ResultSet rs, ArrayList<String> performers) throws SQLException {
 		return new Show(
 				rs.getInt("showID"),
 				rs.getString("Title"),
@@ -256,7 +263,7 @@ public class DBConnector {
 				rs.getString("Description"),
 				rs.getInt("RunTimeMinutes"),
 				rs.getString("Language"),
-				rs.getString("Performer")
+				performers
 				);
 	}
 

@@ -52,8 +52,6 @@ public class Engine {
 //TODO: Should: Dynamic pricing
 //TODO: Should: Postage of tickets
 //TODO: multiple musicians per show?
-
-//TODO: return Strings from methods not println directly
 //TODO: Substitute a file for user input for running automated tests
 //TODO: Printing tickets to file for the user
 

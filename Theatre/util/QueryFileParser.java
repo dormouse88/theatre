@@ -27,6 +27,9 @@ public class QueryFileParser {
 	public String getCustomer() {
 		return getAllQueries("getCustomer.sql").get(0);
 	}
+	public String getPerformers() {
+		return getAllQueries("getPerformers.sql").get(0);
+	}
 
 	/**
 	 * Parses an SQL file and splits it into a separate string for each query.

@@ -1,12 +1,12 @@
 -- finding information on all current shows ---
 SELECT 
-	ShowID,
+	Showing.ShowID,
     Title,
     Duration AS RunTimeMinutes,
     Lang AS Language,
     Info AS Description,
     ShowType.Genre AS Genre,
-	Performer.pname AS Performer
+	Performer_PerformerID AS Performer
 FROM
     Showing
         JOIN
@@ -14,4 +14,4 @@ FROM
 		ON Showing.ShowTypeID = ShowType.ShowTypeID
 		JOIN
 	Performer
-		ON Performer.ShowingID = Showing.ShowID;
+		ON Performer.PerformerID = Showing.Performer_PerformerID;

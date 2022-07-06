@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Show {
 	private	int id;
 	private String title;
@@ -7,16 +9,16 @@ public class Show {
 	private String description;
 	private int duration;
 	private String language;
-	private String performer;
+	private ArrayList<String> performers;
 
-	public Show(int id, String title, String type, String description, int duration, String language, String performer) {
+	public Show(int id, String title, String type, String description, int duration, String language, ArrayList<String> performers) {
 		this.id = id;
 		this.title = title;
 		this.type = type;
 		this.description = description;
 		this.duration = duration;
 		this.language = language;
-		this.performer = performer;
+		this.performers = performers;
 	}
 	
 	public void print() {
@@ -25,8 +27,12 @@ public class Show {
 		System.out.println("Description: "+ description);
 		System.out.println("Duration: "+ duration + " minutes.");
 		System.out.println("Language: "+ language);
-		if (! performer.isBlank() ) {
-			System.out.println("Music by: "+ performer);
+		if (performers != null) {
+			System.out.print("Music by: ");
+			for (String p: performers) {
+				System.out.print(p + ", ");
+			}
+			System.out.println("");
 		}
 	}
 
@@ -48,7 +54,7 @@ public class Show {
 	public String getLanguage() {
 		return language;
 	}
-	public String getPerformer() {
-		return performer;
+	public ArrayList<String> getPerformers() {
+		return performers;
 	}
 }
