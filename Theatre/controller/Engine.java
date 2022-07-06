@@ -47,6 +47,7 @@ public class Engine {
 	}
 	
 //TODO: Refactor Engine class (especially the switch)
+//TODO: Support different prices for different seating zones
 //TODO: Should: Customer history
 //TODO: Should: Dynamic pricing
 //TODO: Should: Postage of tickets

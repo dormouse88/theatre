@@ -103,7 +103,7 @@ class PerformanceTest {
 	@Test
 	void testGetPriceAsString() {
 		price=5525;
-		assertEquals("ï¿½55.25", Performance.getPriceAsString(price), "Verify getPriceAsString");
+		assertEquals("£55.25", Performance.getPriceAsString(price), "Verify getPriceAsString");
 	}
 
 }
