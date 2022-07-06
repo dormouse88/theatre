@@ -1,6 +1,6 @@
 -- finding information on all current shows ---
 SELECT 
-	Showing.ShowID,
+	Showing.ShowingID,
     Title,
     Duration AS RunTimeMinutes,
     Lang AS Language,

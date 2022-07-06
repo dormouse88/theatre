@@ -195,7 +195,7 @@ public class DBConnector {
 		ArrayList<Show> shows = new ArrayList<Show>();
 		try {
 			while (results.next()) {
-				String performerQuery = qfp.getPerformers() + " WHERE Showing.ShowID = " + results.getInt("showID");
+				String performerQuery = qfp.getPerformers() + " WHERE Showing.ShowingID = " + results.getInt("showingID");
 				ResultSet performerResults = executeQuery(performerQuery);
 				ArrayList<String> s = new ArrayList<String>();
 				while (performerResults.next()) {
@@ -217,7 +217,7 @@ public class DBConnector {
 			ResultSet perfResults = executeQuery(perfQueryString);
 			while (perfResults.next()) {
 				int showID = perfResults.getInt("Performance.ShowingID");
-				String showQuery = qfp.getShow() + " WHERE Showing.ShowID = " + showID;
+				String showQuery = qfp.getShow() + " WHERE Showing.ShowingID = " + showID;
 				Show s = getShows(showQuery).get(0);
 //				ResultSet showResults = executeQuery(showQuery);
 //				Show s;
@@ -258,7 +258,7 @@ public class DBConnector {
 	
 	private Show populateShow(ResultSet rs, ArrayList<String> performers) throws SQLException {
 		return new Show(
-				rs.getInt("showID"),
+				rs.getInt("showingID"),
 				rs.getString("Title"),
 				rs.getString("Genre"),
 				rs.getString("Description"),
