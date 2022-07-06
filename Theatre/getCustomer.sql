@@ -1,8 +1,9 @@
 -- get a customer
 SELECT 
 	CustomerID,
-    fname AS username,
-    lname AS name,
+    Username AS Username,
+	fname,
+    lname,
     Address
 FROM
     Customer;
