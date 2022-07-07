@@ -46,12 +46,12 @@ public class Engine {
 		db.connect();
 	}
 	
-//TODO: Should: Customer history
-//TODO: Should: Dynamic pricing
+//TODO: Should: Customer history -TOM
+//TODO: Should: Dynamic pricing -ANDY
+//TODO: SQL Injection protection -ANDY
 //TODO: Should: Postage of tickets
-//TODO: Substitute a file for user input for running automated tests
 //TODO: Printing tickets to file for the user
-//TODO: SQL Injection protection
+//TODO: Substitute a file for user input for running automated tests 
 
 	/**
 	 * The main execution loop.
@@ -103,17 +103,23 @@ public class Engine {
 					displayPerformances();
 				}
 				break;
-			case 6: //Make Purchase
+			case 8: //Order Your Basket
 				makePurchase();
 				break;
-			case 7: //Add a performance to basket
+			case 6: //Add a performance to basket
 				addToBasket();
 				break;
-			case 8:
+			case 7:
 				basket.displayBasket();
 				break;
 			case 9: //Create or login to customer account
 				customerLogin();
+				break;
+			case 10: //Logout
+				customer = null;
+				break;
+			case 11: //See history
+				System.out.println("Not yet implemented");
 				break;
 			case 100: //quit
 				finished = true;
@@ -124,6 +130,33 @@ public class Engine {
 			}
 		}
 		db.close();
+	}
+
+	/**
+	 * Prints to the screen the list of primary options available to the user.
+	 * Additionally shows the login status of the customer account.
+	 */
+	public void displayOptions() {
+		if (customer == null) {
+			System.out.println("Not Logged in.");
+		}
+		else {
+			System.out.println("Logged in as " + customer.getUsername() + ", name: " + customer.getName() + ", address: "+ customer.getAddress());
+		}
+		System.out.println("0  : Display Available Options");
+		System.out.print  ("1  : List Shows                        |  ");
+		System.out.print  ("2  : List Shows By Title               |  "); //{title}
+		System.out.println("3  : List Shows By Date                |  "); //{date}
+		System.out.print  ("4  : View Show Details                 |  "); //{show_index}
+		System.out.print  ("5  : List Performances                 |  "); //{show_index}
+		System.out.println("6  : Add a Performance to Basket       |  "); // {perf_index} {stalls} {adults} {kids}
+		System.out.print  ("7  : View Basket                       |  ");
+		System.out.println("8  : Order Your Basket                 |  ");
+		System.out.print  ("10 : Create/Login to Customer Account  |  "); // {name} {address} {cc}
+		System.out.print  ("11 : Logout of Customer Account        |  "); // {name} {address} {cc}
+		System.out.println("12 : View Your Order History           |  "); // {name} {address} {cc}
+		System.out.println("100 : quit");
+		System.out.println();
 	}
 	
 	/**
@@ -193,6 +226,7 @@ public class Engine {
 		}
 		ArrayList<PerformanceBooking> bookings = basket.getBookings();
 		if (bookings.size() > 0) {
+			basket.displayBasket();
 			String custCCN = uip.getString( "Enter your credit card number" );
 			long numeric = 0;
 			try {
@@ -221,23 +255,29 @@ public class Engine {
 	}
 	
 	/**
-	 * Attempts to login to a customer account using the provided username.
+	 * Does nothing if customer is already logged in.
+	 * Otherwise, attempts to login to a customer account using the provided username.
 	 * If no matching account is found, a new one is created on the database.
 	 */
 	public void customerLogin() {
-		String username = uip.getString("Enter a username");
-		//query database for such a user account
-		Customer c = db.getCustomer(username);
-		if (c != null) {
-			//if exists, login to it
-			customer = c;
+		if (customer != null) {
+			System.out.println("You are already logged in.");
 		}
 		else {
-			//else create it (+be logged in)
-			String name = uip.getString("Enter your name");
-			String address = uip.getString("Enter your address");
-			customer = new Customer(username, name, address);
-			db.newCustomer(customer);
+			String username = uip.getString("Enter a username");
+			//query database for such a user account
+			Customer c = db.getCustomer(username);
+			if (c != null) {
+				//if exists, login to it
+				customer = c;
+			}
+			else {
+				//else create it (+be logged in)
+				String name = uip.getString("Enter your name");
+				String address = uip.getString("Enter your address");
+				customer = new Customer(username, name, address);
+				db.newCustomer(customer);
+			}
 		}
 	}
 
@@ -270,30 +310,5 @@ public class Engine {
 			System.out.print("Performance "+ (i+1) + ": ");
 			performanceList.get(i).print();
 		}
-	}
-
-	/**
-	 * Prints to the screen the list of primary options available to the user.
-	 * Additionally shows the login status of the customer account.
-	 */
-	public void displayOptions() {
-		if (customer == null) {
-			System.out.println("Not Logged in.");
-		}
-		else {
-			System.out.println("Logged in as " + customer.getUsername() + ", name: " + customer.getName() + ", address: "+ customer.getAddress());
-		}
-		System.out.println("0 - Display Available Options");
-		System.out.println("1 - List Shows");
-		System.out.println("2 - List Shows By Title"); //{title}
-		System.out.println("3 - List Shows By Date"); //{date}
-		System.out.println("4 - View Show Details"); //{show_index}
-		System.out.println("5 - List Performances"); //{show_index}
-		System.out.println("6 - Make Purchase");
-		System.out.println("7 - Add A Performance To Basket"); // {perf_index} {stalls} {adults} {kids}
-		System.out.println("8 - View Basket");
-		System.out.println("9 - Create or Login to Customer Account"); // {name} {address} {cc}
-		System.out.println("100 - quit");
-		System.out.println();
 	}
 }

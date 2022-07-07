@@ -279,6 +279,11 @@ public class DBConnector {
 				);
 	}
 	
+	/**
+	 * A helper method to run SQL Updates (use only Strings that do not contain untrusted data)
+	 * @param sql A string containing the sql update to run (use trusted data only)
+	 * @return The number of matching rows from the update (not necessarily the same as rows actually changed)
+	 */
 	private int executeUpdate(String sql) {
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -290,6 +295,11 @@ public class DBConnector {
 		}
 	}
 	
+	/**
+	 * A helper method to run SQL Updates (use only Strings that do not contain untrusted data)
+	 * @param sql A string containing the sql query to run (use trusted data only)
+	 * @return The ResultSet object from the query
+	 */
 	private ResultSet executeQuery(String sql) {
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
