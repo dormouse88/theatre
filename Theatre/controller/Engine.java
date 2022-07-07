@@ -103,22 +103,22 @@ public class Engine {
 					displayPerformances();
 				}
 				break;
-			case 8: //Order Your Basket
-				makePurchase();
-				break;
 			case 6: //Add a performance to basket
 				addToBasket();
 				break;
 			case 7:
 				basket.displayBasket();
 				break;
-			case 9: //Create or login to customer account
+			case 8: //Order Your Basket
+				makePurchase();
+				break;
+			case 10: //Create or login to customer account
 				customerLogin();
 				break;
-			case 10: //Logout
+			case 11: //Logout
 				customer = null;
 				break;
-			case 11: //See history
+			case 12: //See history
 				System.out.println("Not yet implemented");
 				break;
 			case 100: //quit
@@ -238,7 +238,7 @@ public class Engine {
 				System.out.println("Credit card numbers must be 16 digits and numerals only.");
 			}
 			else {
-				success = db.makePurchase( basket.getBookings() );
+				success = db.makePurchase( basket.getBookings(), customer.getUsername() );
 				if (success) {
 					System.out.println("Payment taken. Your tickets have been successfully ordered.");
 					basket.clearBasket();

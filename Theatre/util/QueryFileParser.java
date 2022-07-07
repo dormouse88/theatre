@@ -33,6 +33,9 @@ public class QueryFileParser {
 	public String updateSeats() {
 		return getAllQueries("updateSeats.sql").get(0);
 	}
+	public String insertBooking() {
+		return getAllQueries("insertBooking.sql").get(0);
+	}
 	
 
 	/**
@@ -55,11 +58,13 @@ public class QueryFileParser {
 		while ( s.hasNext() ) {
 			queries.add( s.next() );
 		}
-		queries.remove( queries.size()-1 );
-		
-		for (int i = 0; i< queries.size(); i++) {
-			String q = queries.get(i);
+		if (queries.get(queries.size()-1).isBlank()) {
+			queries.remove( queries.size()-1 );
 		}
+		
+//		for (int i = 0; i< queries.size(); i++) {
+//			String q = queries.get(i);
+//		}
 		return queries;
 	}
 

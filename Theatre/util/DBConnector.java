@@ -113,7 +113,7 @@ public class DBConnector {
 	 * requested and the details of number of tickets required, etc.
 	 * @return true if purchase succeeded, otherwise false.
 	 */
-	public Boolean makePurchase(ArrayList<PerformanceBooking> bookings) {
+	public Boolean makePurchase(ArrayList<PerformanceBooking> bookings, String username) {
 		int failures = 0;
 		executeQuery("START TRANSACTION;");
 		for (int i = 0; i<bookings.size(); i++) {
@@ -131,7 +131,8 @@ public class DBConnector {
 				seatZone = "Stalls";
 			}
 			
-			int matches = 0;
+			int seatMatches = 0;
+			int bookingMatches = 0;
 			try {
 				String update = qfp.updateSeats();
 				PreparedStatement pst = conn.prepareStatement(update);
@@ -139,13 +140,27 @@ public class DBConnector {
 				pst.setInt(2, perfID);
 				pst.setString(3, seatZone);
 				pst.setInt(4, seats);
-				matches = pst.executeUpdate();
+				seatMatches = pst.executeUpdate();
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
 				//matches stays at 0
 			}
-			if (matches == 0) {
+			try {
+				String update = qfp.insertBooking();
+				PreparedStatement pst = conn.prepareStatement(update);
+				pst.setString(1, username);
+				pst.setInt(2, adults);
+				pst.setInt(3, kids);
+				pst.setInt(4, perfID);
+				pst.setString(5, seatZone);
+				bookingMatches = pst.executeUpdate();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+				//matches stays at 0
+			}
+			if (seatMatches == 0 || bookingMatches == 0) {
 				failures++;
 			}
 		}
