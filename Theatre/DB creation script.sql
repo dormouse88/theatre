@@ -97,20 +97,21 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `Theatre`.`Ticket`
+-- Table `Theatre`.`Booking`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Theatre`.`Ticket` (
-  `TicketID` INT NOT NULL AUTO_INCREMENT,
-  `NumberOfTickets` INT NULL,
-  `Cost` INT NULL,
+CREATE TABLE IF NOT EXISTS `Theatre`.`Booking` (
+  `BookingID` INT NOT NULL AUTO_INCREMENT,
+  `NumberOfAdults` INT NULL,
+  `NumberOfChildren` INT NULL,
+  `TotalCost` INT NULL,
   `CustomerID` INT NOT NULL,
-  `PaymentID` INT NOT NULL,
-  `PerformanceID` INT NOT NULL,
-  PRIMARY KEY (`TicketID`),
+  `PaymentID` INT NULL,
+  `SeatID` INT NOT NULL,
+  PRIMARY KEY (`BookingID`),
   INDEX `fk_Ticket_Customer1_idx` (`CustomerID` ASC) VISIBLE,
   INDEX `fk_Ticket_Payment1_idx` (`PaymentID` ASC) VISIBLE,
-  UNIQUE INDEX `TicketID_UNIQUE` (`TicketID` ASC) VISIBLE,
-  INDEX `fk_Ticket_Performance1_idx` (`PerformanceID` ASC) VISIBLE,
+  UNIQUE INDEX `TicketID_UNIQUE` (`BookingID` ASC) VISIBLE,
+  INDEX `fk_Ticket_Performance1_idx` (`SeatID` ASC) VISIBLE,
   CONSTRAINT `fk_Ticket_Customer1`
     FOREIGN KEY (`CustomerID`)
     REFERENCES `Theatre`.`Customer` (`CustomerID`)
@@ -122,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `Theatre`.`Ticket` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_Ticket_Performance1`
-    FOREIGN KEY (`PerformanceID`)
+    FOREIGN KEY (`SeatID`)
     REFERENCES `Theatre`.`Performance` (`PerformanceID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
@@ -201,7 +202,6 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 
 
 
-
 -- test inserts into all tables
 INSERT INTO Employee (fname, lname, email, address) VALUES ("John", "Doe", "JDoe@TR.com", "32 Oliver Dr");
 INSERT INTO Payment (CardDetails, PaymentDate, PaymentAmount) VALUES ("4548493283237532", curdate(), 4000);
@@ -211,5 +211,5 @@ INSERT INTO Showing (Title, Duration, Lang, Info, ShowTypeID) VALUES ("Mamma Mia
 INSERT INTO Performer (pname) VALUES ("MammaMiaGroup");
 INSERT INTO ShowingPerformer(ShowingID, PerformerID) VALUES (1,1); 
 INSERT INTO Performance (pdate, ptime, ShowingID) VALUES ("2022-07-13", "Matinee", 1);
-INSERT INTO Ticket (NumberOfTickets, Cost, CustomerID, PaymentID, PerformanceID) VALUES (1,4000,1,1,1);
+INSERT INTO Booking (NumberOfAdults, NumberOfChildren, TotalCost, CustomerID, PaymentID, SeatID) VALUES (1,0,4000,1,1,1);
 INSERT INTO Seat (SeatZone, NumberOfSeats, Price, PerformanceID) VALUES ("Circle", 80, 4000, 1), ("Stalls", 120, 4000, 1); 
