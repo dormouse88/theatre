@@ -36,6 +36,9 @@ public class QueryFileParser {
 	public String insertBooking() {
 		return getAllQueries("insertBooking.sql").get(0);
 	}
+	public String getBookings() {
+		return getAllQueries("getBookings.sql").get(0);
+	}
 	
 
 	/**

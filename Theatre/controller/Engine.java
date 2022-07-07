@@ -51,7 +51,8 @@ public class Engine {
 //TODO: SQL Injection protection -ANDY
 //TODO: Should: Postage of tickets
 //TODO: Printing tickets to file for the user
-//TODO: Substitute a file for user input for running automated tests 
+//TODO: Substitute a file for user input for running automated tests
+//TODO: Confirm behaviour of a failed order (clear basket?)
 
 	/**
 	 * The main execution loop.
@@ -117,9 +118,10 @@ public class Engine {
 				break;
 			case 11: //Logout
 				customer = null;
+				System.out.println("You are now logged out.");
 				break;
 			case 12: //See history
-				System.out.println("Not yet implemented");
+				viewCustomerHistory();
 				break;
 			case 100: //quit
 				finished = true;
@@ -158,6 +160,24 @@ public class Engine {
 		System.out.println("100 : quit");
 		System.out.println();
 	}
+
+	/**
+	 * Displays information from the database on the previous orders made by the
+	 * currently logged in customer.
+	 */
+	public void viewCustomerHistory() {
+		if (customer == null) {
+			System.out.println("You need to be logged in to see your order history.");
+		}
+		else {
+			//get performance bookings
+			ArrayList<String> bookings = db.getBookings(customer.getUsername());
+			for (String b: bookings) {
+				System.out.println(b);
+			}
+			//print them
+		}
+	}	
 	
 	/**
 	 * Attempts to add a performance to the basket (along with information on seats required).

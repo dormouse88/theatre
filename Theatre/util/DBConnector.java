@@ -181,6 +181,7 @@ public class DBConnector {
 	public Boolean newCustomer(Customer c) {
 		String update = "INSERT INTO Customer (Username, lname, address, password) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "', 'P4$$WORD')";
 		int matches = executeUpdate(update);  //this MIGHT give false positives if this update fails because of unique constraint.
+		//TODO: Test duplicate username behaviour
 		return matches != 0;
 	}
 	
@@ -204,6 +205,30 @@ public class DBConnector {
 		return c;
 	}
 
+	public ArrayList<String> getBookings(String username) {
+		ArrayList<String> ret = new ArrayList<String>();
+		String query = qfp.getBookings();
+		try {
+			PreparedStatement pst = conn.prepareStatement(query);
+			pst.setString(1, username);
+			ResultSet results = pst.executeQuery();
+			while (results.next()) {
+				String r = "";
+				r += results.getDate("pdate");
+				r += " ("+  results.getString("ptime")  + ") : ";
+				r += results.getString("Title") + ". ";
+				r += results.getInt("NumberOfAdults") + " adults and ";
+				r += results.getInt("NumberOfChildren") + " children in the ";
+				r += results.getString("seatZone");
+				ret.add(r);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 	/**
 	 * Closes the database connection.
 	 */

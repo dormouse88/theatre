@@ -27,6 +27,18 @@ public class PerformanceBooking {
 		return total;
 	}
 	
+	public String print() {
+		Performance perf = getPerformance();
+		String seatZone = Performance.getSeatZoneString(stalls);
+		String ret = "A performance of " + perf.getShow().getTitle() + " on " + perf.getDate() + " (" + perf.getMatString() + ").";
+		ret += System.lineSeparator();
+		ret += getAdults() + " adults and " + getKids() + " children seated in the "+ seatZone + ".";
+		ret += System.lineSeparator();
+		ret += "Total price for this performance: "+ Performance.getPriceAsString( calculatePrice() );
+		ret += System.lineSeparator();
+		return ret;
+	}
+	
 	public Performance getPerformance() {
 		return perf;
 	}

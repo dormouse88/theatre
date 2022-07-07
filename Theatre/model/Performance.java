@@ -28,7 +28,6 @@ public class Performance {
 		System.out.println("Date: " + date + " (" + getMatString() + ")");
 		System.out.println(availabilityStalls + " Seats available in the stalls at " + getPriceAsString(priceStalls));
 		System.out.println(availabilityCircle + " Seats available in the circle at " + getPriceAsString(priceCircle));
-//		System.out.println("Price: " + getPriceAsString(price) );
 		System.out.println();
 	}
 	public String getMatString() {
@@ -36,6 +35,12 @@ public class Performance {
 			return "matinee";
 		}
 		return "evening";
+	}
+	public static String getSeatZoneString(Boolean stalls) {
+		if (stalls) {
+			return "stalls";
+		}
+		return "circle";
 	}
 	public static String getPriceAsString(int price) {
 		return "£"+ price/100 + "." + String.format("%02d", price%100);
