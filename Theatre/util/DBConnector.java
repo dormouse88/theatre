@@ -181,7 +181,8 @@ public class DBConnector {
 	public Boolean newCustomer(Customer c) {
 		String update = "INSERT INTO Customer (Username, lname, address, password) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "', 'P4$$WORD')";
 		int matches = executeUpdate(update);  //this MIGHT give false positives if this update fails because of unique constraint.
-		//TODO: Test duplicate username behaviour
+		//matching rows != changed rows
+		//Actually i think violation of unique constraint throws an error. Should test this.
 		return matches != 0;
 	}
 	
@@ -270,7 +271,7 @@ public class DBConnector {
 			ResultSet perfResults = executeQuery(perfQueryString);
 			while (perfResults.next()) {
 				int showID = perfResults.getInt("Performance.ShowingID");
-				String showQuery = qfp.getShow() + " WHERE Showing.ShowingID = " + showID;
+				String showQuery = qfp.getShow() + " WHERE Showing.ShowingID = " + showID; //TODO: This is wrong. WHERE Needs to be AND
 				Show s = getShows(showQuery).get(0);
 				performances.add(populatePerformance(perfResults, s) );
 			}

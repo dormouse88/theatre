@@ -46,13 +46,12 @@ public class Engine {
 		db.connect();
 	}
 	
-//TODO: Should: Customer history -TOM
 //TODO: Should: Dynamic pricing -ANDY
 //TODO: SQL Injection protection -ANDY
-//TODO: Should: Postage of tickets
 //TODO: Printing tickets to file for the user
 //TODO: Substitute a file for user input for running automated tests
 //TODO: Confirm behaviour of a failed order (clear basket?)
+//TODO: Informal testing to check spec met and use cases all ok.
 
 	/**
 	 * The main execution loop.
@@ -108,6 +107,7 @@ public class Engine {
 				addToBasket();
 				break;
 			case 7:
+				System.out.println( getLoginSummary() );
 				basket.displayBasket();
 				break;
 			case 8: //Order Your Basket
@@ -133,18 +133,24 @@ public class Engine {
 		}
 		db.close();
 	}
+	
+	public String getLoginSummary() {
+		String ret = "";
+		if (customer == null) {
+			ret += "Not Logged in.";
+		}
+		else {
+			ret += "Logged in as " + customer.getUsername() + "       (name: " + customer.getName() + ", address: "+ customer.getAddress() + ")";
+		}
+		return ret;
+	}
 
 	/**
 	 * Prints to the screen the list of primary options available to the user.
 	 * Additionally shows the login status of the customer account.
 	 */
 	public void displayOptions() {
-		if (customer == null) {
-			System.out.println("Not Logged in.");
-		}
-		else {
-			System.out.println("Logged in as " + customer.getUsername() + ", name: " + customer.getName() + ", address: "+ customer.getAddress());
-		}
+		System.out.println( getLoginSummary() );
 		System.out.println("0  : Display Available Options");
 		System.out.print  ("1  : List Shows                        |  ");
 		System.out.print  ("2  : List Shows By Title               |  "); //{title}
@@ -258,9 +264,26 @@ public class Engine {
 				System.out.println("Credit card numbers must be 16 digits and numerals only.");
 			}
 			else {
+				boolean posted = false;
+				if (basket.isTicketPostagePossible()) {
+					int postageCost = basket.getPostageCharge();
+					String post = uip.getString("Please type 'Y' if you would like your tickets posted to you for £" + (postageCost / 100) );
+					if (post.equals('Y')) {
+						posted = true;
+					}
+				}
+				
 				success = db.makePurchase( basket.getBookings(), customer.getUsername() );
 				if (success) {
+					//Dummy method here for simulating payment?
+					  //Would take amount (basket.calculatePrice() + maybe getPostageCharge()) and customer account details and CC number.
 					System.out.println("Payment taken. Your tickets have been successfully ordered.");
+					if (posted) {
+						System.out.println("Your tickets will be posted to you.");
+					}
+					else {
+						System.out.println("Your tickets will be available for collection at the box office.");
+					}
 					basket.clearBasket();
 				}
 				else {
@@ -296,7 +319,11 @@ public class Engine {
 				String name = uip.getString("Enter your name");
 				String address = uip.getString("Enter your address");
 				customer = new Customer(username, name, address);
-				db.newCustomer(customer);
+				Boolean created = db.newCustomer(customer);
+				if (!created) {
+					customer = null;
+					System.out.println("There was a problem creating your customer account. Please try a different username.");
+				}
 			}
 		}
 	}

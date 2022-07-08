@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+import java.time.LocalDate;
 import model.PerformanceBooking;
 import model.Performance;
 
@@ -24,6 +25,38 @@ public class Basket {
 		}
 		System.out.println("Total price for your basket: "+ Performance.getPriceAsString( calculatePrice() ) );
 	}
+	
+	public boolean isTicketPostagePossible() {
+		boolean ret = true;
+		LocalDate latestDate = LocalDate.now().plusDays(-7);
+		for (PerformanceBooking pb: bookings) {
+			LocalDate d = pb.getPerformance().getDate();
+			if (d.isAfter(latestDate)) {
+				ret = false;
+			}
+		}
+		return ret;
+	}
+	public int getPostageCharge() {
+		int ret;
+		int totalAdults = 0;
+		int totalKids = 0;
+		for (PerformanceBooking pb: bookings) {
+			totalAdults += pb.getAdults();
+			totalKids += pb.getKids();
+		}
+		if (totalAdults == 0) {
+			ret = 0;
+		}
+		else if (totalKids > 0) {
+			ret = 100;
+		}
+		else {
+			ret = totalAdults * 100;
+		}
+		return ret;
+	}
+	
 	public void clearBasket() {
 		bookings.clear();
 	}
