@@ -49,14 +49,15 @@ public class QueryFileParser {
 	 * @return An ArrayList of Strings where each String is a single query
 	 */
 	private ArrayList<String> getAllQueries(String filename) {
+		ArrayList<String> queries = new ArrayList<String>(); 
 		Scanner s = null;
 		try {
 			s = new Scanner(new File(filename));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("A critical SQL Query file was not found.");
+			return queries;
 		}
 		
-		ArrayList<String> queries = new ArrayList<String>(); 
 		s.useDelimiter(";");
 		while ( s.hasNext() ) {
 			queries.add( s.next() );
@@ -64,10 +65,6 @@ public class QueryFileParser {
 		if (queries.get(queries.size()-1).isBlank()) {
 			queries.remove( queries.size()-1 );
 		}
-		
-//		for (int i = 0; i< queries.size(); i++) {
-//			String q = queries.get(i);
-//		}
 		return queries;
 	}
 
