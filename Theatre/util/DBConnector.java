@@ -271,7 +271,7 @@ public class DBConnector {
 			ResultSet perfResults = executeQuery(perfQueryString);
 			while (perfResults.next()) {
 				int showID = perfResults.getInt("Performance.ShowingID");
-				String showQuery = qfp.getShow() + " WHERE Showing.ShowingID = " + showID; //TODO: This is wrong. WHERE Needs to be AND
+				String showQuery = qfp.getShow() + " AND Showing.ShowingID = " + showID; //TODO: WHERE changed to AND. untested though.
 				Show s = getShows(showQuery).get(0);
 				performances.add(populatePerformance(perfResults, s) );
 			}

@@ -154,15 +154,15 @@ public class Engine {
 		System.out.println("0  : Display Available Options");
 		System.out.print  ("1  : List Shows                        |  ");
 		System.out.print  ("2  : List Shows By Title               |  "); //{title}
-		System.out.println("3  : List Shows By Date                |  "); //{date}
+		System.out.println("3  : List Performances By Date         |  "); //{date}
 		System.out.print  ("4  : View Show Details                 |  "); //{show_index}
-		System.out.print  ("5  : List Performances                 |  "); //{show_index}
+		System.out.print  ("5  : List Performances of a Show       |  "); //{show_index}
 		System.out.println("6  : Add a Performance to Basket       |  "); // {perf_index} {stalls} {adults} {kids}
 		System.out.print  ("7  : View Basket                       |  ");
 		System.out.println("8  : Order Your Basket                 |  ");
-		System.out.print  ("10 : Create/Login to Customer Account  |  "); // {name} {address} {cc}
-		System.out.print  ("11 : Logout of Customer Account        |  "); // {name} {address} {cc}
-		System.out.println("12 : View Your Order History           |  "); // {name} {address} {cc}
+		System.out.print  ("10 : Create/Login to Customer Account  |  "); // {name} {address}
+		System.out.print  ("11 : Logout of Customer Account        |  ");
+		System.out.println("12 : View Your Order History           |  ");
 		System.out.println("100 : quit");
 		System.out.println();
 	}
@@ -268,7 +268,7 @@ public class Engine {
 				if (basket.isTicketPostagePossible()) {
 					int postageCost = basket.getPostageCharge();
 					String post = uip.getString("Please type 'Y' if you would like your tickets posted to you for £" + (postageCost / 100) );
-					if (post.equals('Y')) {
+					if (post.equals(new String("Y"))) {
 						posted = true;
 					}
 				}
