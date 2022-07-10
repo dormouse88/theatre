@@ -210,6 +210,7 @@ INSERT INTO ShowType (Genre) VALUES ("Theatre"), ("Musical"), ("Opera"), ("Conce
 INSERT INTO Showing (Title, Duration, Lang, Info, ShowTypeID) VALUES ("Mamma Mia", 195, "English", "Mamma Mia! is a jukebox musical written by British playwright Catherine Johnson, based on the songs of ABBA composed by Benny Andersson and Björn Ulvaeus, members of the band. The title of the musical is taken from the group's 1975 chart-topper 'Mamma Mia'.",2);
 INSERT INTO Performer (pname) VALUES ("MammaMiaGroup");
 INSERT INTO ShowingPerformer(ShowingID, PerformerID) VALUES (1,1); 
-INSERT INTO Performance (pdate, ptime, ShowingID) VALUES ("2022-07-13", "Matinee", 1);
+INSERT INTO Performance (pdate, ptime, ShowingID) VALUES ("2022-07-13", "Matinee", 1), ("2022-07-13", "Evening", 1);
 INSERT INTO Seat (SeatZone, NumberOfSeats, Price, PerformanceID) VALUES ("Circle", 80, 4000, 1), ("Stalls", 120, 4000, 1); 
 INSERT INTO Booking (NumberOfAdults, NumberOfChildren, TotalCost, CustomerID, PaymentID, SeatID) VALUES (1,0,4000,1,1,1);
+INSERT INTO Seat(SeatZone, Price, NumberOfSeats, PerformanceID) VALUES ("Stalls", 4000, 120, 2), ("Circle", 4000, 80, 2);

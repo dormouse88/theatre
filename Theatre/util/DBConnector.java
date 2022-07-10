@@ -3,6 +3,7 @@ package util;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -86,6 +87,34 @@ public class DBConnector {
 		String query = qfp.getShow() + " WHERE title LIKE '%"+ title + "%'";
 		return getShows(query);
 	}
+	
+	public void getShowsByT(String title) {
+		String query = qfp.getShowBy(); 
+		String results = "";
+		try {
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setString(1, '%'+ title +'%');
+			ResultSet result = ps.executeQuery();
+			while(result.next()) {
+				results += "Show ID: " + result.getInt("ShowingID") + "\n" +
+						"Title: " + result.getString("Title") + "\n" + 
+						"Genre: " + result.getString("Genre") + "\n" +
+						"Description: " + result.getString("Description") + "\n" +
+						"Runtime (minutes): " + result.getInt("RunTimeMinutes") + "\n" +
+						"Language: " + result.getString("Language") + "\n";
+						
+		}
+			} catch (SQLException e) {
+			System.out.println("Error,could not connect");
+			e.printStackTrace();
+		}
+		if (!results.equals("")) {
+		System.out.println("Available shows: \n" + results);
+		}
+		else {
+			System.out.println("No results found, please try again later.");
+			}
+	}
 
 	/**
 	 * Retrieves and returns all performances from the database which are performances 
@@ -96,14 +125,67 @@ public class DBConnector {
 		String perfQueryString = qfp.getPerformance() + " AND Performance.ShowingID = " + showID;
 		return getPerformances(perfQueryString);
 	}
+	
+	public void getPerformanceByShowIDb(int showID) {
+		String perQueryString = qfp.getPerformanceb();
+		String results = "";
+		try {
+			PreparedStatement ps = conn.prepareStatement(perQueryString);
+			ps.setInt(1, showID);
+			ResultSet result = ps.executeQuery();
+			while(result.next()) {
+				results += 
+						"\n----------------------------------------------------------------------------------------------------\n" +
+						"		  Performance date : " + result.getDate("pdate").toString() + "||" +
+						"Performance time : " + result.getString("ptime") + "\n" +
+						"Stalls seats available : " + result.getInt("StallSeats") + " - prices from £" + result.getInt("StallPrice")/100 + "!" +
+						"|| Circle seats available : " + result.getInt("CircleSeats") + " - prices from £" + result.getInt("CirclePrice")/100 + "! \n" +
+						"					PerformanceID : " + result.getInt("Performance.PerformanceID") +
+						"\n----------------------------------------------------------------------------------------------------" ;
+			}
+		} catch (SQLException e) {
+			System.out.println("Connection problem, please try again later.");
+			e.printStackTrace();
+		}
+		System.out.println(results);
+	}
 
 	/**
 	 * Retrieves and returns all performances from the database on the given date.
 	 */
-	public ArrayList<Performance> getPerformancesByDate(LocalDate date) {
-		String perfQueryString = qfp.getPerformance() + " WHERE pdate = '" + date.toString() + "'";
-		return getPerformances(perfQueryString);
+//	public ArrayList<Performance> getPerformancesByDate(LocalDate date) {
+//		String perfQueryString = qfp.getPerformance() + " WHERE pdate = '" + date.toString() + "'";
+//		return getPerformances(perfQueryString);
+//	}
+
+
+	public void getPerformancesByDateb(LocalDate date) {
+		String perfQueryString = qfp.getPerformancedate();
+		String results = "";
+		Date sqldate = Date.valueOf(date);
+		try {
+			PreparedStatement ps = conn.prepareStatement(perfQueryString);
+			ps.setDate(1, sqldate);
+			ResultSet result = ps.executeQuery();
+			while(result.next()) {
+				results += 
+						"\n----------------------------------------------------------------------------------------------------\n" +
+						"		  Performance date : " + result.getDate("pdate").toString() + "||" +
+						"Performance time : " + result.getString("ptime") + "\n" +
+						"Stalls seats available : " + result.getInt("StallSeats") + " - prices from £" + result.getInt("StallPrice")/100 + "!" +
+						"|| Circle seats available : " + result.getInt("CircleSeats") + " - prices from £" + result.getInt("CirclePrice")/100 + "! \n" +
+						"					PerformanceID : " + result.getInt("Performance.PerformanceID") +
+						"\n----------------------------------------------------------------------------------------------------" ;
+			}
+		} catch (SQLException e) {
+
+			System.out.println("Connection problem, please try again later.");
+			e.printStackTrace();	
+		}
+		System.out.println(results);
+		
 	}
+	
 
 	/**
 	 * This method attempts to book seats on the database for multiple performances. 
@@ -181,19 +263,23 @@ public class DBConnector {
 	public Boolean newCustomer(Customer c) {
 		String update = "INSERT INTO Customer (Username, lname, address, password) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "', 'P4$$WORD')";
 		int matches = executeUpdate(update);  //this MIGHT give false positives if this update fails because of unique constraint.
-		//TODO: Test duplicate username behaviour
+		//matching rows != changed rows
+		//Actually i think violation of unique constraint throws an error. Should test this.
 		return matches != 0;
 	}
+	
 	
 	/**
 	 * Retrieves a customer's details from a username.
 	 * @param username
 	 */
 	public Customer getCustomer(String username) {
-		String query = qfp.getCustomer() + " WHERE Username = '" + username + "'";
-		ResultSet results = executeQuery(query);
+		String query = qfp.getCustomer();
 		Customer c = null;
 		try {
+		PreparedStatement ps = conn.prepareStatement(query);
+		ps.setString(1, username);
+		ResultSet results = ps.executeQuery();
 			if (results.next()) {
 				c = populateCustomer(results);
 			}
@@ -204,6 +290,8 @@ public class DBConnector {
 		}
 		return c;
 	}
+	
+	
 
 	public ArrayList<String> getBookings(String username) {
 		ArrayList<String> ret = new ArrayList<String>();
@@ -270,7 +358,7 @@ public class DBConnector {
 			ResultSet perfResults = executeQuery(perfQueryString);
 			while (perfResults.next()) {
 				int showID = perfResults.getInt("Performance.ShowingID");
-				String showQuery = qfp.getShow() + " WHERE Showing.ShowingID = " + showID;
+				String showQuery = qfp.getShow() + " WHERE Showing.ShowingID = " + showID; //TODO: This is wrong. WHERE Needs to be AND
 				Show s = getShows(showQuery).get(0);
 				performances.add(populatePerformance(perfResults, s) );
 			}

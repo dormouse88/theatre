@@ -28,7 +28,7 @@ public class Show {
 		System.out.println("Duration: "+ duration + " minutes.");
 		System.out.println("Language: "+ language);
 		if (performers != null) {
-			System.out.print("Music by: ");
+			System.out.print("Live music will be performed by: ");
 			for (String p: performers) {
 				System.out.print(p + ", ");
 			}
