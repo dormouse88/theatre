@@ -6,4 +6,7 @@ SELECT
     lname,
     Address
 FROM
-    Customer;
+    Customer
+WHERE 
+Username = ?;
+    

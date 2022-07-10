@@ -21,8 +21,17 @@ public class QueryFileParser {
 	public String getShow() {
 		return getAllQueries("getShows.sql").get(0);
 	}
+	public String getShowBy() {
+		return getAllQueries("getShowsb.sql").get(0);
+	}
 	public String getPerformance() {
 		return getAllQueries("getPerformances.sql").get(0);
+	}
+	public String getPerformanceb() {
+		return getAllQueries("getPerformancesb.sql").get(0);
+	}
+	public String getPerformancedate() {
+		return getAllQueries("getPerformancesdate.sql").get(0);
 	}
 	public String getCustomer() {
 		return getAllQueries("getCustomer.sql").get(0);
