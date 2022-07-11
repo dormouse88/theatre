@@ -71,24 +71,20 @@ public class Engine {
 				break;
 			case 2: //shows by title
 				String searchTerm = uip.getString( "Enter Search Term" );
-				//showList = db.getShowsByTitle(searchTerm ); 
-				//displayShows();
-				db.getShowsByT(searchTerm);
-				
+				db.getShowsByTitle(searchTerm ); 
+				showList = db.getShowsByT(searchTerm);
+				displayShows();
 				break;
 			case 3: //performances by date
-				/*
-				 * try { LocalDate searchDate = uip.getDate(); performanceList =
-				 * db.getPerformancesByDate(searchDate ); displayPerformances(); } catch
-				 * (DateTimeParseException e) {
-				 * System.out.println("Your input could not be recognised as a date."); }
-				 */
-				try{ LocalDate userDate = uip.getDate( );
-				db.getPerformancesByDateb(userDate);
+				try{
+					LocalDate userDate = uip.getDate( );
+					performanceList = db.getPerformancesByDateb(userDate);
+					displayPerformances();
 				}
 				catch
-				  (DateTimeParseException e) {
-				  System.out.println("Your input could not be recognised as a date. Please try again."); }
+					(DateTimeParseException e) {
+					System.out.println("Your input could not be recognised as a date. Please try again.");
+				}
 				
 				break;
 			case 4: //View Show Details
@@ -101,19 +97,15 @@ public class Engine {
 				}
 				break;
 			case 5: //List Performances
-				/*
-				 * int showIndex2 = uip.getInt( "Enter Show Number" ) - 1; if (showIndex2 < 0 ||
-				 * showIndex2 > showList.size() ) {
-				 * System.out.println("No such show number in list of shows."); } else {
-				 * performanceList = db.getPerformancesByShowID(
-				 * showList.get(showIndex2).getID() ); //displayPerformances();
-				 * db.getPerformanceByShowIDb(showIndex2); } break;
-				 */
-				
-				int showIndex2 = uip.getInt("Enter show number");
-				db.getPerformanceByShowIDb(showIndex2);
+				int showIndex2 = uip.getInt( "Enter Show Number" ) - 1;
+				if (showIndex2 < 0 || showIndex2 > showList.size() ) {
+					System.out.println("No such show number in list of shows.");
+				}
+				else {
+					performanceList = db.getPerformancesByShowIDb(showList.get(showIndex2).getID() );
+					displayPerformances();
+				}
 				break;
-				
 			case 6: //Add a performance to basket
 				addToBasket();
 				break;
