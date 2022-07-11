@@ -89,7 +89,7 @@ class PerformanceBookingTest {
 		assertTrue(printedString.contains(performance.getShow().getTitle()), "Verify title in print string.");
 		assertTrue(printedString.contains(performance.getMatString()), "Verify getMatString in print string.");
 		assertTrue(printedString.contains(performance.getDate().toString()), "Verify getDate in print string.");
-		assertTrue(printedString.contains("�19.12"), "Verify getDate in print string.");
+		assertTrue(printedString.contains("2022-07-22"), "Verify getDate in print string.");
 		assertTrue(printedString.contains("2 adults"), "Verify adult tickets in print string.");
 		assertTrue(printedString.contains("3 children"), "Verify children tickets in print string.");
 	}
