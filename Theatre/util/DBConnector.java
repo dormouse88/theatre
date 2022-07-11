@@ -74,7 +74,7 @@ public class DBConnector {
 	 * Retrieves and returns all shows from the database.
 	 */
 	public ArrayList<Show> getAllShows() {
-		String query = qfp.getShow();
+		String query = qfp.getShowsStub();
 		ResultSet results = executeQuery(query);
 		return extractShows(results);
 	}
@@ -85,40 +85,19 @@ public class DBConnector {
 	 * @param title A substring to search for
 	 */
 	public ArrayList<Show> getShowsByTitle(String title) {
-		String query = qfp.getShow() + " WHERE title LIKE '%"+ title + "%'";
-		ResultSet results = executeQuery(query);
-		return extractShows(results);
-	}
-	
-	public ArrayList<Show> getShowsByT(String title) {
 		ArrayList<Show> shows = new ArrayList<Show>();
-		String query = qfp.getShowBy();
-//		String results = "";
+		String query = qfp.getShowsByTitle();
 		try {
 			PreparedStatement ps = conn.prepareStatement(query);
 			ps.setString(1, '%'+ title +'%');
 			ResultSet result = ps.executeQuery();
 			shows = extractShows(result);
-//			while(result.next()) {
-//				results += "Show ID: " + result.getInt("ShowingID") + "\n" +
-//						"Title: " + result.getString("Title") + "\n" + 
-//						"Genre: " + result.getString("Genre") + "\n" +
-//						"Description: " + result.getString("Description") + "\n" +
-//						"Runtime (minutes): " + result.getInt("RunTimeMinutes") + "\n" +
-//						"Language: " + result.getString("Language") + "\n";
-//			}
 		}
 		catch (SQLException e) {
 			System.out.println("Error,could not connect");
 			e.printStackTrace();
 		}
 		return shows;
-//		if (!results.equals("")) {
-//			System.out.println("Available shows: \n" + results);
-//		}
-//		else {
-//			System.out.println("No results found, please try again later.");
-//		}
 	}
 
 	/**
@@ -127,74 +106,38 @@ public class DBConnector {
 	 * @param showID The primary key of the matching show
 	 */
 	public ArrayList<Performance> getPerformancesByShowID(int showID) {
-		String perfQueryString = qfp.getPerformance() + " AND Performance.ShowingID = " + showID;
-		ResultSet perfResults = executeQuery(perfQueryString);
-		return extractPerformances(perfResults);
-	}
-	
-	public ArrayList<Performance> getPerformancesByShowIDb(int showID) {
 		ArrayList<Performance> performances = new ArrayList<Performance>();
-		String perQueryString = qfp.getPerformanceb();
+		String perQueryString = qfp.getPerformancesByShowID();
 		try {
 			PreparedStatement ps = conn.prepareStatement(perQueryString);
 			ps.setInt(1, showID);
 			ResultSet result = ps.executeQuery();
 			performances = extractPerformances(result);
-//			while(result.next()) {
-//				results += 
-//						"\n----------------------------------------------------------------------------------------------------\n" +
-//						"		  Performance date : " + result.getDate("pdate").toString() + "||" +
-//						"Performance time : " + result.getString("ptime") + "\n" +
-//						"Stalls seats available : " + result.getInt("StallSeats") + " - prices from £" + result.getInt("StallPrice")/100 + "!" +
-//						"|| Circle seats available : " + result.getInt("CircleSeats") + " - prices from £" + result.getInt("CirclePrice")/100 + "! \n" +
-//						"					PerformanceID : " + result.getInt("Performance.PerformanceID") +
-//						"\n----------------------------------------------------------------------------------------------------" ;
-//			}
 		} catch (SQLException e) {
 			System.out.println("Connection problem, please try again later.");
 			e.printStackTrace();
 		}
 		return performances;
-//		System.out.println(results);
-		//return null;
 	}
 
 	/**
 	 * Retrieves and returns all performances from the database on the given date.
 	 */
-//	public ArrayList<Performance> getPerformancesByDate(LocalDate date) {
-//		String perfQueryString = qfp.getPerformance() + " WHERE pdate = '" + date.toString() + "'";
-//		return getPerformances(perfQueryString);
-//	}
-
-
-	public ArrayList<Performance> getPerformancesByDateb(LocalDate date) {
+	public ArrayList<Performance> getPerformancesByDate(LocalDate date) {
 		ArrayList<Performance> performances = new ArrayList<Performance>();
-		String perfQueryString = qfp.getPerformancedate();
+		String perfQueryString = qfp.getPerformancesByDate();
 		Date sqldate = Date.valueOf(date);
 		try {
 			PreparedStatement ps = conn.prepareStatement(perfQueryString);
 			ps.setDate(1, sqldate);
 			ResultSet result = ps.executeQuery();
 			performances = extractPerformances(result);
-//			while(result.next()) {
-//				results += 
-//						"\n----------------------------------------------------------------------------------------------------\n" +
-//						"		  Performance date : " + result.getDate("pdate").toString() + "||" +
-//						"Performance time : " + result.getString("ptime") + "\n" +
-//						"Stalls seats available : " + result.getInt("StallSeats") + " - prices from £" + result.getInt("StallPrice")/100 + "!" +
-//						"|| Circle seats available : " + result.getInt("CircleSeats") + " - prices from £" + result.getInt("CirclePrice")/100 + "! \n" +
-//						"					PerformanceID : " + result.getInt("Performance.PerformanceID") +
-//						"\n----------------------------------------------------------------------------------------------------" ;
-//			}
 		}
 		catch (SQLException e) {
 			System.out.println("Connection problem, please try again later.");
 			e.printStackTrace();	
 		}
 		return performances;
-//		System.out.println(results);
-		
 	}
 	
 
@@ -273,12 +216,12 @@ public class DBConnector {
 	 */
 	public Boolean newCustomer(Customer c) {
 		String update = "INSERT INTO Customer (Username, lname, address, password) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "', 'P4$$WORD')";
+		//TODO: Parameterize
 		int matches = executeUpdate(update);  //this MIGHT give false positives if this update fails because of unique constraint.
 		//matching rows != changed rows
 		//Actually i think violation of unique constraint throws an error. Should test this.
 		return matches != 0;
 	}
-	
 	
 	/**
 	 * Retrieves a customer's details from a username.
@@ -302,8 +245,6 @@ public class DBConnector {
 		return c;
 	}
 	
-	
-
 	public ArrayList<String> getBookings(String username) {
 		ArrayList<String> ret = new ArrayList<String>();
 		String query = qfp.getBookings();
@@ -366,7 +307,7 @@ public class DBConnector {
 		try {
 			while (perfResults.next()) {
 				int showID = perfResults.getInt("Performance.ShowingID");
-				String showQuery = qfp.getShow() + " AND Showing.ShowingID = " + showID; //WHERE changed to AND. untested though.
+				String showQuery = qfp.getShowsStub() + " AND Showing.ShowingID = " + showID;
 				ResultSet results = executeQuery(showQuery);
 				Show s = extractShows(results).get(0);
 				performances.add(populatePerformance(perfResults, s) );

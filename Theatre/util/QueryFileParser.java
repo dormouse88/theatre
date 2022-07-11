@@ -18,19 +18,19 @@ public class QueryFileParser {
 	public ArrayList<String> getCreationScript() {
 		return getAllQueries("DB creation script.sql");
 	}
-	public String getShow() {
-		return getAllQueries("getShows.sql").get(0);
+	public String getShowsStub() {
+		return getAllQueries("getShowsStub.sql").get(0);
 	}
-	public String getShowBy() {
-		return getAllQueries("getShowsb.sql").get(0);
+	public String getShowsByTitle() {
+		return getAllQueries("getShowsByTitle.sql").get(0);
 	}
-	public String getPerformance() {
-		return getAllQueries("getPerformances.sql").get(0);
+//	public String getPerformance() {
+//		return getAllQueries("getPerformances.sql").get(0);
+//	}
+	public String getPerformancesByShowID() {
+		return getAllQueries("getPerformancesByShowID.sql").get(0);
 	}
-	public String getPerformanceb() {
-		return getAllQueries("getPerformancesb.sql").get(0);
-	}
-	public String getPerformancedate() {
+	public String getPerformancesByDate() {
 		return getAllQueries("getPerformancesdate.sql").get(0);
 	}
 	public String getCustomer() {

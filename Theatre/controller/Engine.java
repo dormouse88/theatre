@@ -47,7 +47,6 @@ public class Engine {
 	}
 	
 //TODO: Should: Dynamic pricing -ANDY
-//TODO: SQL Injection protection -ANDY
 //TODO: Printing tickets to file for the user
 //TODO: Substitute a file for user input for running automated tests
 //TODO: Confirm behaviour of a failed order (clear basket?)
@@ -71,21 +70,19 @@ public class Engine {
 				break;
 			case 2: //shows by title
 				String searchTerm = uip.getString( "Enter Search Term" );
-				db.getShowsByTitle(searchTerm ); 
-				showList = db.getShowsByT(searchTerm);
+				showList = db.getShowsByTitle(searchTerm);
 				displayShows();
 				break;
 			case 3: //performances by date
 				try{
 					LocalDate userDate = uip.getDate( );
-					performanceList = db.getPerformancesByDateb(userDate);
+					performanceList = db.getPerformancesByDate(userDate);
 					displayPerformances();
 				}
 				catch
 					(DateTimeParseException e) {
 					System.out.println("Your input could not be recognised as a date. Please try again.");
 				}
-				
 				break;
 			case 4: //View Show Details
 				int showIndex = uip.getInt( "Enter Show Number") - 1;
@@ -102,7 +99,7 @@ public class Engine {
 					System.out.println("No such show number in list of shows.");
 				}
 				else {
-					performanceList = db.getPerformancesByShowIDb(showList.get(showIndex2).getID() );
+					performanceList = db.getPerformancesByShowID(showList.get(showIndex2).getID() );
 					displayPerformances();
 				}
 				break;

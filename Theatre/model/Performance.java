@@ -24,12 +24,23 @@ public class Performance {
 	}
 	
 	public void print() {
-		System.out.println("A performance of " + show.getTitle());
-		System.out.println("Date: " + date + " (" + getMatString() + ")");
-		System.out.println(availabilityStalls + " Seats available in the stalls at " + getPriceAsString(priceStalls));
-		System.out.println(availabilityCircle + " Seats available in the circle at " + getPriceAsString(priceCircle));
-		System.out.println();
+		String s = 
+				"\n----------------------------------------------------------------------------------------------------\n" +
+				"		  Performance date : " + date + "||" +
+				"Performance time : " + getMatString() + "\n" +
+				"Stalls seats available : " + availabilityStalls + " - prices from " + getPriceAsString(priceStalls) + "!" +
+				"|| Circle seats available : " + availabilityCircle + " - prices from " + getPriceAsString(priceCircle) + "! \n" +
+//				"					PerformanceID : " + result.getInt("Performance.PerformanceID") +
+				"\n----------------------------------------------------------------------------------------------------" ;
+		System.out.println(s);
+//		System.out.println("A performance of " + show.getTitle());
+//		System.out.println("Date: " + date + " (" + getMatString() + ")");
+//		System.out.println(availabilityStalls + " Seats available in the stalls at " + getPriceAsString(priceStalls));
+//		System.out.println(availabilityCircle + " Seats available in the circle at " + getPriceAsString(priceCircle));
+//		System.out.println();
 	}
+	
+	
 	public String getMatString() {
 		if (matinee) {
 			return "matinee";
