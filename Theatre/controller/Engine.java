@@ -176,12 +176,10 @@ public class Engine {
 			System.out.println("You need to be logged in to see your order history.");
 		}
 		else {
-			//get performance bookings
 			ArrayList<String> bookings = db.getBookings(customer.getUsername());
 			for (String b: bookings) {
 				System.out.println(b);
 			}
-			//print them
 		}
 	}	
 	

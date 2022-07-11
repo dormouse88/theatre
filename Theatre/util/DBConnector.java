@@ -215,11 +215,18 @@ public class DBConnector {
 	 * It fails if one already exists with that name.
 	 */
 	public Boolean newCustomer(Customer c) {
-		String update = "INSERT INTO Customer (Username, lname, address, password) VALUES ('"+ c.getUsername() + "', '" + c.getName() + "', '" + c.getAddress() + "', 'P4$$WORD')";
-		//TODO: Parameterize
-		int matches = executeUpdate(update);  //this MIGHT give false positives if this update fails because of unique constraint.
-		//matching rows != changed rows
-		//Actually i think violation of unique constraint throws an error. Should test this.
+		String update = "INSERT INTO Customer (Username, lname, address, password) VALUES (?,?,?,?)";
+		int matches = 0;
+		try {
+			PreparedStatement pst = conn.prepareStatement(update);
+			pst.setString(1, c.getUsername());
+			pst.setString(2, c.getName());
+			pst.setString(3, c.getAddress());
+			pst.setString(4, "P4$$WORD");
+			matches =  pst.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("Account creation failed.");
+		}
 		return matches != 0;
 	}
 	
