@@ -47,7 +47,6 @@ public class Engine {
 	}
 	
 //TODO: Should: Dynamic pricing -ANDY
-//TODO: SQL Injection protection -ANDY
 //TODO: Printing tickets to file for the user
 //TODO: Substitute a file for user input for running automated tests
 //TODO: Confirm behaviour of a failed order (clear basket?)
@@ -71,17 +70,18 @@ public class Engine {
 				break;
 			case 2: //shows by title
 				String searchTerm = uip.getString( "Enter Search Term" );
-				showList = db.getShowsByTitle(searchTerm ); 
+				showList = db.getShowsByTitle(searchTerm);
 				displayShows();
 				break;
 			case 3: //performances by date
-				try {
-					LocalDate searchDate = uip.getDate();
-					performanceList = db.getPerformancesByDate(searchDate );
+				try{
+					LocalDate userDate = uip.getDate( );
+					performanceList = db.getPerformancesByDate(userDate);
 					displayPerformances();
 				}
-				catch (DateTimeParseException e) {
-					System.out.println("Your input could not be recognised as a date.");
+				catch
+					(DateTimeParseException e) {
+					System.out.println("Your input could not be recognised as a date. Please try again.");
 				}
 				break;
 			case 4: //View Show Details
@@ -95,11 +95,11 @@ public class Engine {
 				break;
 			case 5: //List Performances
 				int showIndex2 = uip.getInt( "Enter Show Number" ) - 1;
-				if (showIndex2 < 0 || showIndex2 >= showList.size() ) {
+				if (showIndex2 < 0 || showIndex2 > showList.size() ) {
 					System.out.println("No such show number in list of shows.");
 				}
 				else {
-					performanceList = db.getPerformancesByShowID( showList.get(showIndex2).getID() );
+					performanceList = db.getPerformancesByShowID(showList.get(showIndex2).getID() );
 					displayPerformances();
 				}
 				break;
@@ -176,12 +176,10 @@ public class Engine {
 			System.out.println("You need to be logged in to see your order history.");
 		}
 		else {
-			//get performance bookings
 			ArrayList<String> bookings = db.getBookings(customer.getUsername());
 			for (String b: bookings) {
 				System.out.println(b);
 			}
-			//print them
 		}
 	}	
 	
