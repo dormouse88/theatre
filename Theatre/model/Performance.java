@@ -3,6 +3,9 @@ package model;
 import java.time.LocalDate;
 
 public class Performance {
+	static public final int SEATS_CIRCLE = 80;
+	static public final int SEATS_STALLS = 120;
+
 	private int id;
 	private Show show;
 	private LocalDate date;
@@ -28,8 +31,8 @@ public class Performance {
 				"\n----------------------------------------------------------------------------------------------------\n" +
 				"		  Performance date : " + date + "||" +
 				"Performance time : " + getMatString() + "\n" +
-				"Stalls seats available : " + availabilityStalls + " - prices from " + getPriceAsString(priceStalls) + "!" +
-				"|| Circle seats available : " + availabilityCircle + " - prices from " + getPriceAsString(priceCircle) + "! \n" +
+				"Stalls seats available : " + availabilityStalls + " - prices from " + getPriceAsString(getPriceStalls()) + "!" +
+				"|| Circle seats available : " + availabilityCircle + " - prices from " + getPriceAsString(getPriceCircle()) + "! \n" +
 //				"					PerformanceID : " + result.getInt("Performance.PerformanceID") +
 				"\n----------------------------------------------------------------------------------------------------" ;
 		System.out.println(s);
@@ -76,9 +79,11 @@ public class Performance {
 		return availabilityCircle;
 	}
 	public int getPriceStalls() {
-		return priceStalls;
-	}	
+		Price d = new Price(priceStalls, SEATS_STALLS);
+		return d.DoAllDiscounts(availabilityStalls, date);
+	}
 	public int getPriceCircle() {
-		return priceCircle;
+		Price d = new Price(priceCircle, SEATS_CIRCLE);
+		return d.DoAllDiscounts(availabilityCircle, date);
 	}	
 }

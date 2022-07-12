@@ -29,29 +29,51 @@ public class Price {
 	private int totalSeats;
 	private int remainingSeats;
 	
-	public Price(int basePrice) {
+	public Price(int basePrice, int totalSeats) {
 		paidPrice = basePrice; //baseprice retrieved from db (seatZone)
 		discountLevel = 0; //currently is set at 0, no discounts applied
 		discount = 0.2;  //discount is currently set to 20% per level - MS analysis
 		currentDate = LocalDate.now();
-		totalSeats = 200; //currently hardcoded
-		remainingSeats = 200;
+		this.totalSeats = totalSeats;
+		remainingSeats = totalSeats;
 		
 	}
 
-	public long getDateDiscount(LocalDate date) {
-		//TODO check if datediscount can be applied
-		//get date of performance using user input, get current date.
+	/**
+	 * A single method that the caller can use to apply all appropriate discounts
+	 * and not need to worry about the correct order of calling methods
+	 * @param remainingSeats The remaining seats
+	 * @param pdate The date of the performance
+	 * @return the discounted price in pence
+	 */
+	public int DoAllDiscounts(int remainingSeats, LocalDate pdate) {
+		if (isHighAvailabilityDiscount(remainingSeats)) {
+			discountLevel += 1;
+		};
+		if (isDateDiscount(pdate)) {
+			discountLevel += 1;
+		};
+		if (isFlashSalePricing(remainingSeats, pdate)) {
+			discountLevel = 3;
+		};
+		applyDiscounts();
+		return (int)getPaidPrice();
+	}	
+
+	
+	public boolean isDateDiscount(LocalDate date) {
+		if (getDaysUntil(date) > 7 ) { 
+			return true;
+		}
+		return false;
+	}
+
+	public long getDaysUntil(LocalDate date) {
 		long daysUntil = currentDate.until(date, ChronoUnit.DAYS);
-		if (daysUntil > 7 ) { 
-			discountLevel +=1;}
 		return daysUntil;
 	}
 	
-	
-	
-	
-	/*
+	/**
 	 * gets the available number of seats and is called in the getHighAvailabilityDiscount() method;
 	 * @param remainingSeats is called from the db via a query getting the total number of available seats from the Seat table
 	 * @returns available seats as a %
@@ -60,47 +82,43 @@ public class Price {
 	public int getAvailability(int remainingSeats) {
 		this.remainingSeats = remainingSeats;
 		return (remainingSeats*100)/totalSeats;
-		
-		
 	}
-	/*
+	
+	/**
 	 * if the remaining number of seats exceeds 30%, there is high availability and so the discountLevel is increased by 1. When called
 	 * by engine this is checked before the dateDiscount is applied.
 	 * @param remainingSeats is called from a query from the db and passed to the getAvailability call
 	 * @returns a % of available seats as an int
 	 */
-	public boolean getHighAvailabilityDiscount(int remainingSeats) {
+	public boolean isHighAvailabilityDiscount(int remainingSeats) {
 		//TODO check how many seats are remaining, decided 30% remaining though this could be changed.
 		//create a method in dbdriver to get number of remaining seats and pass to this method
 		double availableSeats = getAvailability(remainingSeats);
 		//check if available seats is >30% 
 		if (availableSeats > 30) {
-			discountLevel += 1;
 			return true;
 		}
 		return false;
-		}
-
+	}
 		
-	/*
+	/**
 	 * flashSalePricing is checked last and has highest discountLevel applied. 
 	 * @params, remainingSeats and date of the show - both values obtained from db queries.
 	 * if both checks are true, there is high availability and the show will be on in less than a day so the price is drastically cut.
 	 */
-	
-	public void flashSalePricing(int remainingSeats, LocalDate date) {
+	public boolean isFlashSalePricing(int remainingSeats, LocalDate date) {
 		//TODO if todays date is 1 day from performance, and totalSeats > 30%, give maximum discounts on tickets.
 		//market research says this is 60% disc
-		if (getDateDiscount(date) <= 1 && getHighAvailabilityDiscount(remainingSeats) == true); {
-			discountLevel = 3;} 
-		applyDiscounts();
+		if (getDaysUntil(date) <= 1 && isHighAvailabilityDiscount(remainingSeats) == true) {
+			return true;
+		}
+		return false;
 	}
 	
-	/*
+	/**
 	 * applies the discount by multiplying the discountLevel by the discount by the current paidPrice. 
 	 * if the discountLevel is 0, the paidPrice is unchanged.
 	 */
-
 	public void applyDiscounts() {
 		// apply any discounts.
 		if (discountLevel == 0) {
