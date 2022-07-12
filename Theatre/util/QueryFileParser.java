@@ -18,19 +18,19 @@ public class QueryFileParser {
 	public ArrayList<String> getCreationScript() {
 		return getAllQueries("DB creation script.sql");
 	}
-	public String getShow() {
-		return getAllQueries("getShows.sql").get(0);
+	public String getShowsStub() {
+		return getAllQueries("getShowsStub.sql").get(0);
 	}
-	public String getShowBy() {
-		return getAllQueries("getShowsb.sql").get(0);
+	public String getShowsByTitle() {
+		return getAllQueries("getShowsByTitle.sql").get(0);
 	}
-	public String getPerformance() {
-		return getAllQueries("getPerformances.sql").get(0);
+//	public String getPerformance() {
+//		return getAllQueries("getPerformances.sql").get(0);
+//	}
+	public String getPerformancesByShowID() {
+		return getAllQueries("getPerformancesByShowID.sql").get(0);
 	}
-	public String getPerformanceb() {
-		return getAllQueries("getPerformancesb.sql").get(0);
-	}
-	public String getPerformancedate() {
+	public String getPerformancesByDate() {
 		return getAllQueries("getPerformancesdate.sql").get(0);
 	}
 	public String getCustomer() {
@@ -58,25 +58,22 @@ public class QueryFileParser {
 	 * @return An ArrayList of Strings where each String is a single query
 	 */
 	private ArrayList<String> getAllQueries(String filename) {
+		ArrayList<String> queries = new ArrayList<String>(); 
 		Scanner s = null;
 		try {
 			s = new Scanner(new File(filename));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("A critical SQL Query file was not found.");
+			return queries;
 		}
 		
-		ArrayList<String> queries = new ArrayList<String>(); 
-		s.useDelimiter(";"); 
+		s.useDelimiter(";");
 		while ( s.hasNext() ) {
 			queries.add( s.next() );
 		}
 		if (queries.get(queries.size()-1).isBlank()) {
 			queries.remove( queries.size()-1 );
 		}
-		
-//		for (int i = 0; i< queries.size(); i++) {
-//			String q = queries.get(i);
-//		}
 		return queries;
 	}
 

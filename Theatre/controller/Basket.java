@@ -6,7 +6,7 @@ import model.PerformanceBooking;
 import model.Performance;
 
 public class Basket {
-	ArrayList<PerformanceBooking> bookings;
+	private ArrayList<PerformanceBooking> bookings;
 	
 	public Basket()  {
 		bookings = new ArrayList<PerformanceBooking>();

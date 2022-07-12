@@ -47,7 +47,6 @@ public class Engine {
 	}
 	
 //TODO: Should: Dynamic pricing -ANDY
-//TODO: SQL Injection protection -ANDY
 //TODO: Printing tickets to file for the user
 //TODO: Substitute a file for user input for running automated tests
 //TODO: Confirm behaviour of a failed order (clear basket?)
@@ -71,25 +70,19 @@ public class Engine {
 				break;
 			case 2: //shows by title
 				String searchTerm = uip.getString( "Enter Search Term" );
-				//showList = db.getShowsByTitle(searchTerm ); 
-				//displayShows();
-				db.getShowsByT(searchTerm);
-				
+				showList = db.getShowsByTitle(searchTerm);
+				displayShows();
 				break;
 			case 3: //performances by date
-				/*
-				 * try { LocalDate searchDate = uip.getDate(); performanceList =
-				 * db.getPerformancesByDate(searchDate ); displayPerformances(); } catch
-				 * (DateTimeParseException e) {
-				 * System.out.println("Your input could not be recognised as a date."); }
-				 */
-				try{ LocalDate userDate = uip.getDate( );
-				db.getPerformancesByDateb(userDate);
+				try{
+					LocalDate userDate = uip.getDate( );
+					performanceList = db.getPerformancesByDate(userDate);
+					displayPerformances();
 				}
 				catch
-				  (DateTimeParseException e) {
-				  System.out.println("Your input could not be recognised as a date. Please try again."); }
-				
+					(DateTimeParseException e) {
+					System.out.println("Your input could not be recognised as a date. Please try again.");
+				}
 				break;
 			case 4: //View Show Details
 				int showIndex = uip.getInt( "Enter Show Number") - 1;
@@ -101,19 +94,15 @@ public class Engine {
 				}
 				break;
 			case 5: //List Performances
-				/*
-				 * int showIndex2 = uip.getInt( "Enter Show Number" ) - 1; if (showIndex2 < 0 ||
-				 * showIndex2 > showList.size() ) {
-				 * System.out.println("No such show number in list of shows."); } else {
-				 * performanceList = db.getPerformancesByShowID(
-				 * showList.get(showIndex2).getID() ); //displayPerformances();
-				 * db.getPerformanceByShowIDb(showIndex2); } break;
-				 */
-				
-				int showIndex2 = uip.getInt("Enter show number");
-				db.getPerformanceByShowIDb(showIndex2);
+				int showIndex2 = uip.getInt( "Enter Show Number" ) - 1;
+				if (showIndex2 < 0 || showIndex2 > showList.size() ) {
+					System.out.println("No such show number in list of shows.");
+				}
+				else {
+					performanceList = db.getPerformancesByShowID(showList.get(showIndex2).getID() );
+					displayPerformances();
+				}
 				break;
-				
 			case 6: //Add a performance to basket
 				addToBasket();
 				break;
@@ -165,15 +154,15 @@ public class Engine {
 		System.out.println("0  : Display Available Options");
 		System.out.print  ("1  : List Shows                        |  ");
 		System.out.print  ("2  : List Shows By Title               |  "); //{title}
-		System.out.println("3  : List Shows By Date                |  "); //{date}
+		System.out.println("3  : List Performances By Date         |  "); //{date}
 		System.out.print  ("4  : View Show Details                 |  "); //{show_index}
-		System.out.print  ("5  : List Performances                 |  "); //{show_index}
+		System.out.print  ("5  : List Performances of a Show       |  "); //{show_index}
 		System.out.println("6  : Add a Performance to Basket       |  "); // {perf_index} {stalls} {adults} {kids}
 		System.out.print  ("7  : View Basket                       |  ");
 		System.out.println("8  : Order Your Basket                 |  ");
-		System.out.print  ("10 : Create/Login to Customer Account  |  "); // {name} {address} {cc}
-		System.out.print  ("11 : Logout of Customer Account        |  "); // {name} {address} {cc}
-		System.out.println("12 : View Your Order History           |  "); // {name} {address} {cc}
+		System.out.print  ("10 : Create/Login to Customer Account  |  "); // {name} {address}
+		System.out.print  ("11 : Logout of Customer Account        |  ");
+		System.out.println("12 : View Your Order History           |  ");
 		System.out.println("100 : quit");
 		System.out.println();
 	}
@@ -187,12 +176,10 @@ public class Engine {
 			System.out.println("You need to be logged in to see your order history.");
 		}
 		else {
-			//get performance bookings
 			ArrayList<String> bookings = db.getBookings(customer.getUsername());
 			for (String b: bookings) {
 				System.out.println(b);
 			}
-			//print them
 		}
 	}	
 	
@@ -279,7 +266,7 @@ public class Engine {
 				if (basket.isTicketPostagePossible()) {
 					int postageCost = basket.getPostageCharge();
 					String post = uip.getString("Please type 'Y' if you would like your tickets posted to you for £" + (postageCost / 100) );
-					if (post.equals('Y')) {
+					if (post.equals(new String("Y"))) {
 						posted = true;
 					}
 				}
