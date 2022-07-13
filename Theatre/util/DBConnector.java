@@ -384,7 +384,7 @@ public class DBConnector {
 	 * @param sql A string containing the sql query to run (use trusted data only)
 	 * @return The ResultSet object from the query
 	 */
-	private ResultSet executeQuery(String sql) {
+	public ResultSet executeQuery(String sql) {
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			pst.execute();
@@ -395,5 +395,9 @@ public class DBConnector {
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public Connection getConnection() {
+		return this.conn;
 	}
 }
