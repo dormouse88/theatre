@@ -71,10 +71,10 @@ class PerformanceBookingTest {
 	@Test
 	void testCalculatePrice() {
 		PerformanceBooking performanceBooking = new PerformanceBooking(performance,true,2,3);
-		assertEquals(1912, performanceBooking.calculatePrice(),"Verifying stall total performance booking cost");
+		assertEquals(1147, performanceBooking.calculatePrice(),"Verifying stall total performance booking cost");
 		
 		PerformanceBooking performanceBooking2 = new PerformanceBooking(performance,false,2,3);
-		assertEquals(10412, performanceBooking2.calculatePrice(),"Verifying circle total performance booking cost");
+		assertEquals(6247, performanceBooking2.calculatePrice(),"Verifying circle total performance booking cost");
 	}
 	
 	/**
