@@ -32,7 +32,8 @@ class PerformanceTest {
 	int duration = 120;
 	String language = "english";
 	
-	LocalDate date = LocalDate.of(2022, 7, 22);
+	LocalDate dateStatic = LocalDate.of(2022, 7, 22);
+	LocalDate dateDynamic = LocalDate.now().plusDays(-5);
 	Boolean isMatinee = true;
 	int availabilityStalls = 120;
 	int availabilityCircle = 80;
@@ -61,17 +62,17 @@ class PerformanceTest {
 	@Test
 	void testPerformanceConstructor() {
 		
-		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle);
+		Performance performance = new Performance(id,show, dateDynamic,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle);
 		
 		assertNotNull(performance, "Verify performance constructor");
 		assertEquals(id, performance.getID(),"Verify getID");
 		assertNotNull(performance.getShow(), "Verify getShow");
-		assertEquals(date, performance.getDate(), "Verify performace getDate");
+		assertEquals(dateDynamic, performance.getDate(), "Verify performace getDate");
 		assertEquals(isMatinee,performance.getMatinee(),"Verify getMatinee");
 	    assertEquals(availabilityStalls,performance.getAvailabilityStalls(),"Verify getAvailabilityStalls");
 		assertEquals(availabilityCircle,performance.getAvailabilityCircle(),"Verify getAvailabilityCircle");
-		assertEquals(270, performance.getPriceStalls(), "Verify getPrice");
-		assertEquals(1470, performance.getPriceCircle(), "Verify getPrice");
+		assertEquals(180, performance.getPriceStalls(), "Verify getPrice");
+		assertEquals(980, performance.getPriceCircle(), "Verify getPrice");
 	}
 
 	/**
@@ -80,7 +81,7 @@ class PerformanceTest {
 	@Test
 	void testPrint() {
 		
-		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle );
+		Performance performance = new Performance(id,show, dateDynamic,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle );
 		performance.print();
 		assertTrue(outputStreamCaptor.toString().contains(performance.getMatString()), "Verify getMatString is printed out.");
 		assertTrue(outputStreamCaptor.toString().contains(Integer.toString(availabilityStalls)), "Verify count of availabilityStalls is printed out");
@@ -94,11 +95,11 @@ class PerformanceTest {
 	void testGetMatString() {
 		
 		isMatinee = true;
-		Performance performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle,  priceStalls, priceCircle );
+		Performance performance = new Performance(id,show, dateDynamic,isMatinee,availabilityStalls, availabilityCircle,  priceStalls, priceCircle );
 		assertEquals("matinee", performance.getMatString(), "Verify getMatString matinee");
 		
 		isMatinee = false;
-		Performance performance2 = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle,  priceStalls, priceCircle);
+		Performance performance2 = new Performance(id,show, dateDynamic,isMatinee,availabilityStalls, availabilityCircle,  priceStalls, priceCircle);
 		assertEquals("evening", performance2.getMatString(), "Verify getMatString evening");
 	}
 
@@ -108,7 +109,7 @@ class PerformanceTest {
 	@Test
 	void testGetPriceAsString() {
 		int price=5525;
-		assertEquals("ï¿½55.25", Performance.getPriceAsString(price), "Verify getPriceAsString");
+		assertEquals("£55.25", Performance.getPriceAsString(price), "Verify getPriceAsString");
 	}
 
 }

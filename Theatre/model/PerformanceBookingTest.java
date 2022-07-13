@@ -30,7 +30,8 @@ class PerformanceBookingTest {
 	String language = "english";
 	String performer = "Performer1";
 	
-	LocalDate date = LocalDate.of(2022, 7, 22);
+	LocalDate dateStatic = LocalDate.of(2022, 7, 22);
+	LocalDate dateDynamic = LocalDate.now().plusDays(-5);
 	Boolean isMatinee = true;
 	int availabilityStalls = 120;
 	int availabilityCircle = 80;
@@ -39,7 +40,8 @@ class PerformanceBookingTest {
 	
 	Show show = null;
 	
-	Performance performance = null;
+	Performance performance1 = null;
+	Performance performance2 = null;
 
 	@BeforeEach
 	public void setUp() {
@@ -47,7 +49,8 @@ class PerformanceBookingTest {
 		performers.add("Performer1");
 		performers.add("Performer2");
 		show = new Show(showID, title, type, description, duration, language, performers );
-		performance = new Performance(id,show, date,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle);
+		performance1 = new Performance(id,show, dateStatic,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle);
+		performance2 = new Performance(id,show, dateDynamic,isMatinee,availabilityStalls, availabilityCircle, priceStalls, priceCircle);
 	}
 
 	
@@ -56,9 +59,9 @@ class PerformanceBookingTest {
 	 */
 	@Test
 	void testPerformanceBookingConstructor() {
-		PerformanceBooking performanceBooking = new PerformanceBooking(performance,true,2,3);
+		PerformanceBooking performanceBooking = new PerformanceBooking(performance1,true,2,3);
 		assertNotNull(performanceBooking, "Verifying Performance object creation ");
-		assertEquals(performance,performanceBooking.getPerformance(),"Verifying getPerformance");
+		assertEquals(performance1,performanceBooking.getPerformance(),"Verifying getPerformance");
 		assertTrue(performanceBooking.getStalls(),"Verfying getStalls");
 		assertEquals(2, performanceBooking.getAdults(),"Verifying getAdults");
 		assertEquals(3, performanceBooking.getKids(), "Verifying getKids");
@@ -70,11 +73,11 @@ class PerformanceBookingTest {
 	 */
 	@Test
 	void testCalculatePrice() {
-		PerformanceBooking performanceBooking = new PerformanceBooking(performance,true,2,3);
-		assertEquals(1147, performanceBooking.calculatePrice(),"Verifying stall total performance booking cost");
+		PerformanceBooking performanceBooking = new PerformanceBooking(performance2,true,2,3);
+		assertEquals(765, performanceBooking.calculatePrice(),"Verifying stall total performance booking cost");
 		
-		PerformanceBooking performanceBooking2 = new PerformanceBooking(performance,false,2,3);
-		assertEquals(6247, performanceBooking2.calculatePrice(),"Verifying circle total performance booking cost");
+		PerformanceBooking performanceBooking2 = new PerformanceBooking(performance2,false,2,3);
+		assertEquals(4165, performanceBooking2.calculatePrice(),"Verifying circle total performance booking cost");
 	}
 	
 	/**
@@ -83,12 +86,12 @@ class PerformanceBookingTest {
 	@Test
 	void testPrint() {
 		
-		PerformanceBooking performanceBooking = new PerformanceBooking(performance,true,2,3);
+		PerformanceBooking performanceBooking = new PerformanceBooking(performance1,true,2,3);
 		String printedString = performanceBooking.print();
 		
-		assertTrue(printedString.contains(performance.getShow().getTitle()), "Verify title in print string.");
-		assertTrue(printedString.contains(performance.getMatString()), "Verify getMatString in print string.");
-		assertTrue(printedString.contains(performance.getDate().toString()), "Verify getDate in print string.");
+		assertTrue(printedString.contains(performance1.getShow().getTitle()), "Verify title in print string.");
+		assertTrue(printedString.contains(performance1.getMatString()), "Verify getMatString in print string.");
+		assertTrue(printedString.contains(performance1.getDate().toString()), "Verify getDate in print string.");
 		assertTrue(printedString.contains("2022-07-22"), "Verify getDate in print string.");
 		assertTrue(printedString.contains("2 adults"), "Verify adult tickets in print string.");
 		assertTrue(printedString.contains("3 children"), "Verify children tickets in print string.");
