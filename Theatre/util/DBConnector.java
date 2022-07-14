@@ -44,7 +44,7 @@ public class DBConnector {
 			Scanner s2 = new Scanner(new File("connection.txt"));
 			String url = s2.nextLine().trim();
 			String dbName = s2.nextLine().trim();
-			conn = DriverManager.getConnection(url + dbName, uname, pwd);
+			conn = DriverManager.getConnection(url /*+ dbName */, uname, pwd); //don't try to connect to a particular schema or connection might fail
 		} catch (IOException e) {
 			System.out.println("File error.");
 			e.printStackTrace();
