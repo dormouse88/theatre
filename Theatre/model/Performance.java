@@ -29,10 +29,11 @@ public class Performance {
 	public void print() {
 		String s = 
 				"\n----------------------------------------------------------------------------------------------------\n" +
-				"		  Performance date : " + date + "||" +
+				"     A performance of " + show.getTitle() + "\n" +
+				"		  Performance date : " + date + " || " +
 				"Performance time : " + getMatString() + "\n" +
 				"Stalls seats available : " + availabilityStalls + " - prices from " + getPriceAsString(getPriceStalls()) + "!" +
-				"|| Circle seats available : " + availabilityCircle + " - prices from " + getPriceAsString(getPriceCircle()) + "! \n" +
+				" || Circle seats available : " + availabilityCircle + " - prices from " + getPriceAsString(getPriceCircle()) + "! \n" +
 //				"					PerformanceID : " + result.getInt("Performance.PerformanceID") +
 				"\n----------------------------------------------------------------------------------------------------" ;
 		System.out.println(s);
