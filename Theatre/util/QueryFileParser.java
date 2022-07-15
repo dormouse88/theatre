@@ -18,6 +18,9 @@ public class QueryFileParser {
 	public ArrayList<String> getCreationScript() {
 		return getAllQueries("DB creation script.sql");
 	}
+	public ArrayList<String> getSampleDataScript() {
+		return getAllQueries("sample data script.sql");
+	}
 	public String getShowsStub() {
 		return getAllQueries("getShowsStub.sql").get(0);
 	}

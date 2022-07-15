@@ -68,6 +68,11 @@ public class DBConnector {
 		{
 			executeQuery(cre.get(i) + ";");
 		}
+		ArrayList<String> sd = qfp.getSampleDataScript();
+		for (int i = 0; i < sd.size(); i++ )
+		{
+			executeQuery(sd.get(i) + ";");
+		}
 	}
 	
 	/**
