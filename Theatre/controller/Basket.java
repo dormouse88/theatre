@@ -28,10 +28,10 @@ public class Basket {
 	
 	public boolean isTicketPostagePossible() {
 		boolean ret = true;
-		LocalDate latestDate = LocalDate.now().plusDays(-7);
+		LocalDate latestDate = LocalDate.now().plusDays(7);
 		for (PerformanceBooking pb: bookings) {
 			LocalDate d = pb.getPerformance().getDate();
-			if (d.isAfter(latestDate)) {
+			if (latestDate.isAfter(d)) {
 				ret = false;
 			}
 		}

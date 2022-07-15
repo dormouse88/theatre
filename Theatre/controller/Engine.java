@@ -266,7 +266,7 @@ public class Engine {
 				if (basket.isTicketPostagePossible()) {
 					int postageCost = basket.getPostageCharge();
 					String post = uip.getString("Please type 'Y' if you would like your tickets posted to you for £" + (postageCost / 100) );
-					if (post.equals(new String("Y"))) {
+					if (post.equals("Y")) {
 						posted = true;
 					}
 				}
