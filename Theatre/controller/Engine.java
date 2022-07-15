@@ -95,7 +95,7 @@ public class Engine {
 				break;
 			case 5: //List Performances
 				int showIndex2 = uip.getInt( "Enter Show Number" ) - 1;
-				if (showIndex2 < 0 || showIndex2 > showList.size() ) {
+				if (showIndex2 < 0 || showIndex2 >= showList.size() ) {
 					System.out.println("No such show number in list of shows.");
 				}
 				else {
